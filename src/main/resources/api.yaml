@@ -1,0 +1,179 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger DoorKeeper
+  license:
+    name: MIT
+servers:
+  - url: http://doorkeeper.com/api/v1
+paths:
+  /register:
+    post:
+      summary: register blabla
+      operationId: register
+      tags:
+        - door
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Acceptance result and position
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /status:
+    get:
+      summary: status blabla
+      operationId: getStatus
+      tags:
+        - door
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Position
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /entry:
+    post:
+      summary: entry blabla
+      operationId: entry
+      tags:
+        - door
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Permition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntryResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /exit:
+    post:
+      summary: exit blabla
+      operationId: exit
+      tags:
+        - door
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Exit
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /capacity:
+    post:
+      summary: capacity blabla
+      operationId: setCapacity
+      tags:
+        - door
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapacityBody'
+      responses:
+        '200':
+          description: Done
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    RegisterResponse:
+      type: object
+      required:
+        - accepted
+      properties:
+        accepted:
+          type: boolean
+        position:
+          type: integer
+          format: int32
+    StatusResponse:
+      type: object
+      required:
+        - position
+      properties:
+        position:
+          type: integer
+          format: int32
+    EntryResponse:
+      type: object
+      required:
+        - permitted
+      properties:
+        permitted:
+          type: boolean
+    CapacityBody:
+      type: object
+      required:
+        - capacity
+      properties:
+        capacity:
+          type: integer
+          format: int32
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
