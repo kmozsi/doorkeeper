@@ -25,10 +25,7 @@ public class OfficeEntryService {
 
     @Transactional
     public void entry(String userId) {
-        //TODO it is just dummy
-        OfficeEntry officeEntry = new OfficeEntry();
-        officeEntry.setEntered(false);
-        officeEntry.setUserId(userId);
-        officeEntryRepository.save(officeEntry);
+        //TODO it is still just dummy
+        officeEntryRepository.save(OfficeEntry.of(userId, 1, true));
     }
 }

@@ -8,7 +8,6 @@ import org.openapitools.model.CapacityBody;
 import org.openapitools.model.EntryResponse;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,19 +18,19 @@ import java.util.logging.Logger;
 public class Controller implements DoorApi {
 
     private final OfficeEntryService officeEntryService;
+    private final JwtService jwtService;
 
-    public Controller(OfficeEntryService officeEntryService) {
+    public Controller(OfficeEntryService officeEntryService, JwtService jwtService) {
         this.officeEntryService = officeEntryService;
+        this.jwtService = jwtService;
     }
-    @Autowired
-    private JwtService jwtService;
 
     @Override
     public ResponseEntity<EntryResponse> entry(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received entry call with userId: " + userId);
         officeEntryService.entry(userId);
-        return ResponseEntity.ok(new EntryResponse().permitted(true));
+        return ResponseEntity.ok(new EntryResponse().permitted(false));
     }
 
     @Override
@@ -46,14 +45,14 @@ public class Controller implements DoorApi {
     public ResponseEntity<StatusResponse> getStatus(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received get status call with userId: " + userId);
-        return ResponseEntity.ok(new StatusResponse().position(10));
+        return ResponseEntity.ok(new StatusResponse().position(1));
     }
 
     @Override
     public ResponseEntity<RegisterResponse> register(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received register call with userId: " + userId);
-        return ResponseEntity.ok(new RegisterResponse().accepted(true).position(10));
+        return ResponseEntity.ok(new RegisterResponse().accepted(false).position(1));
     }
 
     @Override
