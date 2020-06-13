@@ -26,6 +26,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RegisterResponse"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         default:
           description: unexpected error
           content:
@@ -51,6 +57,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/StatusResponse"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         default:
           description: unexpected error
           content:
@@ -76,6 +88,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EntryResponse"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         default:
           description: unexpected error
           content:
@@ -97,6 +115,12 @@ paths:
       responses:
         '200':
           description: Exit
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         default:
           description: unexpected error
           content:
@@ -104,7 +128,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /capacity:
-    post:
+    patch:
       summary: capacity blabla
       operationId: setCapacity
       tags:
@@ -125,6 +149,12 @@ paths:
       responses:
         '200':
           description: Done
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         default:
           description: unexpected error
           content:
@@ -160,10 +190,11 @@ components:
           type: boolean
     CapacityBody:
       type: object
-      required:
-        - capacity
       properties:
         capacity:
+          type: integer
+          format: int32
+        percentage:
           type: integer
           format: int32
     Error:

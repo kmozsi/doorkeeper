@@ -1,5 +1,6 @@
 package com.bigtv.doorkeeper.controller;
 
+import com.bigtv.doorkeeper.service.OfficeEntryService;
 import com.bigtv.doorkeeper.enumeration.Role;
 import com.bigtv.doorkeeper.service.JwtService;
 import org.openapitools.api.DoorApi;
@@ -17,6 +18,11 @@ import java.util.logging.Logger;
 @RestController
 public class Controller implements DoorApi {
 
+    private final OfficeEntryService officeEntryService;
+
+    public Controller(OfficeEntryService officeEntryService) {
+        this.officeEntryService = officeEntryService;
+    }
     @Autowired
     private JwtService jwtService;
 
@@ -24,6 +30,7 @@ public class Controller implements DoorApi {
     public ResponseEntity<EntryResponse> entry(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received entry call with userId: " + userId);
+        officeEntryService.entry(userId);
         return ResponseEntity.ok(new EntryResponse().permitted(true));
     }
 
@@ -31,6 +38,7 @@ public class Controller implements DoorApi {
     public ResponseEntity<Void> exit(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received exit call with userId: " + userId);
+        officeEntryService.exit(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
