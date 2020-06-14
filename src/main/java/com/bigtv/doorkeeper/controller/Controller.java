@@ -29,8 +29,7 @@ public class Controller implements DoorApi {
     public ResponseEntity<EntryResponse> entry(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received entry call with userId: " + userId);
-        officeEntryService.entry(userId);
-        return ResponseEntity.ok(new EntryResponse().permitted(false));
+        return ResponseEntity.ok(officeEntryService.entry(userId));
     }
 
     @Override
@@ -45,14 +44,14 @@ public class Controller implements DoorApi {
     public ResponseEntity<StatusResponse> getStatus(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received get status call with userId: " + userId);
-        return ResponseEntity.ok(new StatusResponse().position(1));
+        return ResponseEntity.ok(officeEntryService.status(userId));
     }
 
     @Override
     public ResponseEntity<RegisterResponse> register(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         Logger.getLogger(getClass().getName()).info("Received register call with userId: " + userId);
-        return ResponseEntity.ok(new RegisterResponse().accepted(false).position(1));
+        return ResponseEntity.ok(officeEntryService.register(userId));
     }
 
     @Override

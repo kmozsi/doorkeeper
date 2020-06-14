@@ -1,21 +1,26 @@
 package com.bigtv.doorkeeper.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
+@Builder
+@SequenceGenerator(name = "ordinal_seq", allocationSize = 1000)
 public class OfficeEntry {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ordinal_seq")
+  private Integer ordinal;
+
   private String userId;
-  private int ordinal;
-  private boolean entered;
+  private boolean entered = false;
+  private boolean exited = false;
 
 }

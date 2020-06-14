@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class EntryIntegrationTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
@@ -39,8 +41,28 @@ public class EntryIntegrationTest {
     private OfficeCapacityRepository officeCapacityRepository;
 
     @Test
-    public void registerToFullHouse() throws Exception {
-        thereIsTwentyPercentCapacity();
+    public void userCanRegisterAndEntryAndExitIntoAnEmptyHouse() throws Exception {
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(content().string("{\"permitted\":true}"))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/exit")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void registerToFullHouseAndRefuseEntry() throws Exception {
+        thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
         mockMvc.perform(post("/register")
@@ -63,16 +85,33 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void userCanEntryAndExit() throws Exception {
-        mockMvc.perform(post("/entry")
+    public void registerToFullHouseAndEntryAfterExitingOthers() throws Exception {
+        thereIsTwoPlaceForToday();
+        thereAreTwoEmployeeInTheBuilding();
+
+        mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"accepted\":false,\"position\":1}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":1}"));
 
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk());
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":0}"));
+
     }
 
     @Test
@@ -83,12 +122,12 @@ public class EntryIntegrationTest {
             .andExpect(status().isConflict());
     }
 
-    private void thereIsTwentyPercentCapacity() {
+    private void thereIsTwoPlaceForToday() {
         officeCapacityRepository.save(OfficeCapacity.of(1, 10, 20));
     }
 
     private void thereAreTwoEmployeeInTheBuilding() {
-        officeEntryRepository.save(OfficeEntry.of(USER_2_ID, 0, true));
-        officeEntryRepository.save(OfficeEntry.of(USER_3_ID, 0, true));
+        officeEntryRepository.save(OfficeEntry.builder().userId(USER_2_ID).entered(true).build());
+        officeEntryRepository.save(OfficeEntry.builder().userId(USER_3_ID).entered(true).build());
     }
 }
