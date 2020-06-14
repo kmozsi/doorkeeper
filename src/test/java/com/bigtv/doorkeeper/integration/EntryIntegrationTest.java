@@ -41,7 +41,7 @@ public class EntryIntegrationTest {
     private OfficeCapacityRepository officeCapacityRepository;
 
     @Test
-    public void userCanRegisterAndEntryAndExitIntoAnEmptyHouse() throws Exception {
+    public void userCanRegisterThenEntryThenExitIntoAnEmptyHouse() throws Exception {
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -61,7 +61,7 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void registerToFullHouseAndRefuseEntry() throws Exception {
+    public void entryShouldRefusedAfterRegisteringToAFullHouse() throws Exception {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
@@ -85,7 +85,7 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void registerToFullHouseAndEntryAfterExitingOthers() throws Exception {
+    public void exitingShouldCreatePlaceForWaitingUser() throws Exception {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
