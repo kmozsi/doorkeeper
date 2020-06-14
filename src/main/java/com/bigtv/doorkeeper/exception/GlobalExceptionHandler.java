@@ -19,12 +19,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntryNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleEntryNotFound(
+    public ResponseEntity<String> handleEntryNotFound(
         EntryNotFoundException exception
     ) {
         Logger.getLogger(getClass().getName()).info("Entry not found: " + exception);
         return ResponseEntity
             .status(CONFLICT)
-            .body(ErrorMessage.of(CONFLICT, "Entry not found"));
+            .body("Entry not found");
     }
 }
