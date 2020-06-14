@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @SequenceGenerator(name = "ordinal_seq", allocationSize = 1000)
-public class OfficeEntry {
+public class Booking {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ordinal_seq")

@@ -1,24 +1,23 @@
 package com.bigtv.doorkeeper.service;
 
-import com.bigtv.doorkeeper.config.CachingConfig;
-import com.bigtv.doorkeeper.repository.OfficeEntryRepository;
+import com.bigtv.doorkeeper.repository.BookingRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
-public class OfficeEntryCacheService {
+public class BookingCacheService {
 
     private final OfficeCapacityService officeCapacityService;
-    private final OfficeEntryRepository officeEntryRepository;
+    private final BookingRepository bookingRepository;
 
-    public OfficeEntryCacheService(
+    public BookingCacheService(
         OfficeCapacityService officeCapacityService,
-        OfficeEntryRepository officeEntryRepository
+        BookingRepository bookingRepository
     ) {
         this.officeCapacityService = officeCapacityService;
-        this.officeEntryRepository = officeEntryRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Cacheable(value = POSITION_CACHE)
@@ -27,11 +26,11 @@ public class OfficeEntryCacheService {
     }
 
     private int getFirstOrdinal() {
-        return officeEntryRepository.findTopByOrderByOrdinalAsc().getOrdinal();
+        return bookingRepository.findTopByOrderByOrdinalAsc().getOrdinal();
     }
 
     private int countExitedBefore(int ordinal) {
-        return officeEntryRepository.countAllByExitedAndOrdinalLessThan(true, ordinal);
+        return bookingRepository.countAllByExitedAndOrdinalLessThan(true, ordinal);
     }
 
 }

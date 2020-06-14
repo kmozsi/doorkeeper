@@ -1,9 +1,9 @@
 package com.bigtv.doorkeeper.integration;
 
 import com.bigtv.doorkeeper.entity.OfficeCapacity;
-import com.bigtv.doorkeeper.entity.OfficeEntry;
+import com.bigtv.doorkeeper.entity.Booking;
 import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
-import com.bigtv.doorkeeper.repository.OfficeEntryRepository;
+import com.bigtv.doorkeeper.repository.BookingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +34,14 @@ public class EntryIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private OfficeEntryRepository officeEntryRepository;
+    private BookingRepository bookingRepository;
 
     @Autowired
     private OfficeCapacityRepository officeCapacityRepository;
 
     @BeforeEach
     public void deleteTables() {
-        officeEntryRepository.deleteAll();
+        bookingRepository.deleteAll();
         officeCapacityRepository.deleteAll();
     }
 
@@ -132,7 +132,7 @@ public class EntryIntegrationTest {
     }
 
     private void thereAreTwoEmployeeInTheBuilding() {
-        officeEntryRepository.save(OfficeEntry.builder().userId(USER_2_ID).entered(true).build());
-        officeEntryRepository.save(OfficeEntry.builder().userId(USER_3_ID).entered(true).build());
+        bookingRepository.save(Booking.builder().userId(USER_2_ID).entered(true).build());
+        bookingRepository.save(Booking.builder().userId(USER_3_ID).entered(true).build());
     }
 }
