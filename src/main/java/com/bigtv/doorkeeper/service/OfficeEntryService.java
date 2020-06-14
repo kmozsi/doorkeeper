@@ -9,7 +9,7 @@ import org.openapitools.model.StatusResponse;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
 public class OfficeEntryService {
@@ -24,16 +24,16 @@ public class OfficeEntryService {
         this.officeEntryCacheService = officeEntryCacheService;
     }
 
-    @CacheEvict(value = "positions", allEntries = true)
+    @CacheEvict(value = POSITION_CACHE, allEntries = true)
     public void exit(String userId) {
-        OfficeEntry userInBuilding = findNotExitedUser(userId).orElseThrow(EntryNotFoundException::new);
+        OfficeEntry userInBuilding = getNotExitedUser(userId);
         userInBuilding.setExited(true);
         officeEntryRepository.save(userInBuilding);
     }
 
     public EntryResponse entry(String userId) {
-        OfficeEntry waitingUser = findWaitingUser(userId).orElseThrow(EntryNotFoundException::new);
-        if (officeEntryCacheService.calculatePositionFromOrdinal(waitingUser.getOrdinal()) > 0) {
+        OfficeEntry waitingUser = getWaitingUser(userId);
+        if (isEntryPermittedForUser(waitingUser)) {
             return new EntryResponse().permitted(false);
         }
         waitingUser.setEntered(true);
@@ -41,21 +41,34 @@ public class OfficeEntryService {
         return new EntryResponse().permitted(true);
     }
 
+    private boolean isEntryPermittedForUser(OfficeEntry user) {
+        return officeEntryCacheService.calculatePositionFromOrdinal(user.getOrdinal()) > 0;
+    }
+
     public RegisterResponse register(String userId) {
         OfficeEntry newEntry = officeEntryRepository.save(OfficeEntry.builder().userId(userId).build());
-        int position = officeEntryCacheService.calculatePositionFromOrdinal(newEntry.getOrdinal());
+        return createRegisterResponse(calculatePositionForUser(newEntry));
+    }
+
+    private RegisterResponse createRegisterResponse(int position) {
         return new RegisterResponse().accepted(position < 0).position(Math.max(position, 0));
     }
 
     public StatusResponse status(String userId) {
-        return new StatusResponse().position(officeEntryCacheService.calculatePositionFromOrdinal(findWaitingUser(userId).orElseThrow(EntryNotFoundException::new).getOrdinal()));
+        return new StatusResponse().position(calculatePositionForUser(getWaitingUser(userId)));
     }
 
-    private Optional<OfficeEntry> findNotExitedUser(String userId) {
-        return officeEntryRepository.findByExitedAndUserId(false, userId);
+    private int calculatePositionForUser(OfficeEntry user) {
+        return officeEntryCacheService.calculatePositionFromOrdinal(user.getOrdinal());
     }
 
-    private Optional<OfficeEntry> findWaitingUser(String userId) {
-        return officeEntryRepository.findByEnteredAndUserId(false, userId);
+    private OfficeEntry getNotExitedUser(String userId) {
+        return officeEntryRepository.findByExitedAndUserId(false, userId)
+            .orElseThrow(EntryNotFoundException::new);
+    }
+
+    private OfficeEntry getWaitingUser(String userId) {
+        return officeEntryRepository.findByEnteredAndUserId(false, userId)
+            .orElseThrow(EntryNotFoundException::new);
     }
 }

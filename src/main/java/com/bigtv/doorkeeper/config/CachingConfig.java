@@ -10,8 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CachingConfig {
 
+    public static final String POSITION_CACHE = "positions";
+
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("positions");
+        return new ConcurrentMapCacheManager(POSITION_CACHE);
     }
 }

@@ -1,8 +1,11 @@
 package com.bigtv.doorkeeper.service;
 
+import com.bigtv.doorkeeper.config.CachingConfig;
 import com.bigtv.doorkeeper.repository.OfficeEntryRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
 public class OfficeEntryCacheService {
@@ -18,7 +21,7 @@ public class OfficeEntryCacheService {
         this.officeEntryRepository = officeEntryRepository;
     }
 
-    @Cacheable(value = "positions")
+    @Cacheable(value = POSITION_CACHE)
     public int calculatePositionFromOrdinal(int ordinal) {
         return ordinal - officeCapacityService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1;
     }
