@@ -1,30 +1,33 @@
 package com.bigtv.doorkeeper.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.logging.Logger;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(value = JWTVerificationException.class)
     public ResponseEntity<Void> handleAuthorizationException(JWTVerificationException e) {
-        Logger.getLogger(getClass().getName()).info("JWT verification error: " + e);
+        logger.info("JWT verification error: " + e);
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(EntryNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleEntryNotFound(
+    public ResponseEntity<String> handleEntryNotFound(
         EntryNotFoundException exception
     ) {
-        Logger.getLogger(getClass().getName()).info("Entry not found: " + exception);
+        logger.info("Entry not found: " + exception);
         return ResponseEntity
             .status(CONFLICT)
-            .body(ErrorMessage.of(CONFLICT, "Entry not found"));
+            .body("Entry not found");
     }
 }
