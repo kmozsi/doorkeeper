@@ -4,6 +4,7 @@ import com.bigtv.doorkeeper.entity.OfficeCapacity;
 import com.bigtv.doorkeeper.entity.OfficeEntry;
 import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
 import com.bigtv.doorkeeper.repository.OfficeEntryRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,8 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-// TODO instead of dirtiescontext, drop database
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class EntryIntegrationTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
@@ -40,6 +39,12 @@ public class EntryIntegrationTest {
 
     @Autowired
     private OfficeCapacityRepository officeCapacityRepository;
+
+    @BeforeEach
+    public void deleteTables() {
+        officeEntryRepository.deleteAll();
+        officeCapacityRepository.deleteAll();
+    }
 
     @Test
     public void userCanRegisterThenEntryThenExitIntoAnEmptyHouse() throws Exception {
