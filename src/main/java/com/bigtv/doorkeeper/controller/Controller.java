@@ -3,6 +3,7 @@ package com.bigtv.doorkeeper.controller;
 import com.bigtv.doorkeeper.service.BookingService;
 import com.bigtv.doorkeeper.enumeration.Role;
 import com.bigtv.doorkeeper.service.JwtService;
+import com.bigtv.doorkeeper.service.OfficeCapacityService;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.DoorApi;
 import org.openapitools.model.CapacityBody;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class Controller implements DoorApi {
 
     private final BookingService bookingService;
+    private final OfficeCapacityService capacityService;
     private final JwtService jwtService;
 
-    public Controller(BookingService bookingService, JwtService jwtService) {
+    public Controller(BookingService bookingService, OfficeCapacityService capacityService, JwtService jwtService) {
         this.bookingService = bookingService;
+        this.capacityService = capacityService;
         this.jwtService = jwtService;
     }
 
@@ -57,6 +60,7 @@ public class Controller implements DoorApi {
     public ResponseEntity<Void> setCapacity(String xToken, CapacityBody capacityBody) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE, Role.HR);
         log.info("Received set capacity call with userId: " + userId);
+        capacityService.setCapacity(capacityBody);
         return ResponseEntity.ok().build();
     }
 }
