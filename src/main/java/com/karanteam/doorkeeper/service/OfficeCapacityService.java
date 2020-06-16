@@ -37,14 +37,7 @@ public class OfficeCapacityService {
     }
 
     public void setCapacity(CapacityBody capacityBody) {
-        Optional<OfficeCapacity> optionalCapacity = capacityRepository.findTopByOrderByIdAsc();
-        OfficeCapacity capacity;
-        if (optionalCapacity.isPresent()) {
-            capacity = optionalCapacity.get();
-        } else {
-            capacity = new OfficeCapacity();
-            capacity.setCapacity(capacityConfig.getInitialCapacity());
-        }
+        OfficeCapacity capacity = capacityRepository.findTopByOrderByIdAsc().orElseGet(OfficeCapacity::new);
         capacity.setCapacity(capacityBody.getCapacity());
         capacity.setAllowedPercentage(capacityBody.getPercentage());
         log.info("New daily capacity set: " + capacity.getDailyCapacity());
