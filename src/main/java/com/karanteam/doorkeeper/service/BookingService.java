@@ -56,6 +56,15 @@ public class BookingService {
         return createRegisterResponse(calculatePosition(booking));
     }
 
+    public void cleanupBookings() {
+        bookingRepository.findByEntered(false).forEach( booking -> {
+                booking.setEntered(true);
+                booking.setExited(true);
+                bookingRepository.save(booking);
+            }
+        );
+    }
+
     private RegisterResponse createRegisterResponse(int position) {
         return new RegisterResponse().canEnter(position <= 0).position(position);
     }
