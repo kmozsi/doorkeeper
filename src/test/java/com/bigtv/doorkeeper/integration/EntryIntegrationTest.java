@@ -54,38 +54,10 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void userCanRegisterThenEntryThenExitIntoAnEmptyHouse() throws Exception {
-        when(jwtService.parseToken(anyString(), any())).thenReturn(USER_1_ID);
-
-        mockMvc.perform(post("/register")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
-
-        mockMvc.perform(get("/status")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
-
-        mockMvc.perform(post("/entry")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk());
-
-        mockMvc.perform(post("/exit")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void twoUserCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
+    public void usersCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
         when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
         when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
 
-    public void usersCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -157,7 +129,7 @@ public class EntryIntegrationTest {
         thereAreTwoEmployeeInTheBuilding();
 
         when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
-        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
+        when(jwtService.parseToken(matches(USER_4_X_TOKEN), any())).thenReturn(USER_4_ID);
 
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
