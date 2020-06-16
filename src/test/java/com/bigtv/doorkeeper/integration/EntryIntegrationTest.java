@@ -5,6 +5,7 @@ import com.bigtv.doorkeeper.entity.OfficeCapacity;
 import com.bigtv.doorkeeper.repository.BookingRepository;
 import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
 import com.bigtv.doorkeeper.service.JwtService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +130,7 @@ public class EntryIntegrationTest {
         thereAreTwoEmployeeInTheBuilding();
 
         when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
         when(jwtService.parseToken(matches(USER_4_X_TOKEN), any())).thenReturn(USER_4_ID);
 
         mockMvc.perform(post("/register")
@@ -141,7 +143,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":false,\"position\":2}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":2}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -175,11 +177,14 @@ public class EntryIntegrationTest {
 
     @Test
     public void userShouldRegisterAgainAfterExiting() throws Exception {
+
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -190,7 +195,6 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
 
         mockMvc.perform(post("/exit")
@@ -207,7 +211,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -218,7 +222,6 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
     }
 
@@ -226,6 +229,9 @@ public class EntryIntegrationTest {
     public void userGetPositionWithNewRegistrationAfterExit() throws Exception {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
+
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
 
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
@@ -236,19 +242,18 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
 
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":false,\"position\":1}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
