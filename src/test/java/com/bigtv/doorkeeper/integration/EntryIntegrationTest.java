@@ -29,9 +29,11 @@ public class EntryIntegrationTest {
 
     private static final String USER_1_X_TOKEN = "TEST";
     private static final String USER_2_X_TOKEN = "TEST2";
+    private static final String USER_4_X_TOKEN = "TEST4";
     private static final String USER_1_ID = "uid";
     private static final String USER_2_ID = "uid2";
     private static final String USER_3_ID = "uid3";
+    private static final String USER_4_ID = "uid4";
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,34 +54,7 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void userCanRegisterThenEntryThenExitIntoAnEmptyHouse() throws Exception {
-        when(jwtService.parseToken(anyString(), any())).thenReturn(USER_1_ID);
-
-        mockMvc.perform(post("/register")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
-
-        mockMvc.perform(get("/status")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
-
-        mockMvc.perform(post("/entry")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk());
-
-        mockMvc.perform(post("/exit")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void twoUserCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
+    public void usersCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
         when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
         when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
 
@@ -149,12 +124,13 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void exitingShouldCreatePlaceForWaitingUser() throws Exception {
+    public void exitingShouldCreatePlacesForWaitingUsers() throws Exception {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
         when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
         when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
+        when(jwtService.parseToken(matches(USER_4_X_TOKEN), any())).thenReturn(USER_4_ID);
 
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -162,11 +138,23 @@ public class EntryIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
 
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"canEnter\":false,\"position\":2}"));
+
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
             .andExpect(content().string("{\"position\":1}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":2}"));
 
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
@@ -178,6 +166,99 @@ public class EntryIntegrationTest {
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
             .andExpect(content().string("{\"position\":0}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":1}"));
+    }
+
+    @Test
+    public void userShouldRegisterAgainAfterExiting() throws Exception {
+
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":0}"));
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/exit")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isConflict());
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":0}"));
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void userGetPositionWithNewRegistrationAfterExit() throws Exception {
+        thereIsTwoPlaceForToday();
+        thereAreTwoEmployeeInTheBuilding();
+
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
+
+        mockMvc.perform(post("/exit")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":1}"));
     }
 
     @Test
