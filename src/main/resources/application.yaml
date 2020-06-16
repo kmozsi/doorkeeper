@@ -8,3 +8,6 @@ spring:
     password: doorkeeper
 jwt:
   secret: cRfUjXn2r5u8x/A?D(G+KaPdSgVkYp3s
+application:
+  initialCapacity: 250
+  initialPercentage: 10

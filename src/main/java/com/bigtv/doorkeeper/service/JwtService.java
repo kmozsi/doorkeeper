@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.bigtv.doorkeeper.config.JwtConfiguration;
 import com.bigtv.doorkeeper.enumeration.Role;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static java.util.Arrays.stream;
@@ -15,8 +14,11 @@ import static java.util.Arrays.stream;
 @Service
 public class JwtService {
 
-    @Autowired
-    private JwtConfiguration configuration;
+    private final JwtConfiguration configuration;
+
+    public JwtService(JwtConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
     public String parseToken(String token, Role... roles) throws JWTVerificationException {
         Algorithm algorithm = Algorithm.HMAC256(configuration.getSecret());
