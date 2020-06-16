@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = JWTVerificationException.class)
+    @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<Void> handleAuthorizationException(JWTVerificationException e) {
         log.error("JWT verification error: " + e);
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntryNotFoundException.class)
     public ResponseEntity<String> handleEntryNotFound(EntryNotFoundException exception) {
         log.error("Entry not found: " + exception);
-        return ResponseEntity.status(CONFLICT).body("Entry not found");
+        return ResponseEntity.status(NOT_FOUND).body("Entry not found");
     }
 
     @ExceptionHandler(EntryForbiddenException.class)
