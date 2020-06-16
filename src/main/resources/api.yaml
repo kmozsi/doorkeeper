@@ -32,8 +32,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        default:
-          description: unexpected error
+        '500':
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -63,8 +63,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        default:
-          description: unexpected error
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -92,8 +98,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        default:
-          description: unexpected error
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -119,8 +131,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        default:
-          description: unexpected error
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -138,7 +156,7 @@ paths:
             type: string
           required: true
       requestBody:
-        description: Optional description in *Markdown*
+        description: Contains new capacity and percentage values
         required: true
         content:
           application/json:
@@ -153,8 +171,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        default:
-          description: unexpected error
+        '500':
+          description: Unexpected error
           content:
             application/json:
               schema:
