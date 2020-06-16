@@ -1,18 +1,23 @@
 package com.bigtv.doorkeeper.integration;
 
-import com.bigtv.doorkeeper.entity.OfficeCapacity;
 import com.bigtv.doorkeeper.entity.Booking;
-import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
+import com.bigtv.doorkeeper.entity.OfficeCapacity;
 import com.bigtv.doorkeeper.repository.BookingRepository;
+import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
+import com.bigtv.doorkeeper.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,13 +27,11 @@ public class EntryIntegrationTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
 
-    // TODO mock jwtService
-    private static final String USER_1_X_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNjE2NTM5MTIyLCJpYXQiOjE1MTYyMzkwMjIsInJvbGVzIjpbIkVNUExPWUVFIiwiSFIiXSwidXNlcklkIjoidWlkIn0.cGsC9yA77vTcSK7He0D3Vt0OBSWQvQS33AO387cdA1Q";
-    private static final String USER_2_X_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRpYmkiLCJleHAiOjE2MTY1MzkxMjIsImlhdCI6MTUxNjIzOTAyMiwicm9sZXMiOlsiRU1QTE9ZRUUiLCJIUiJdLCJ1c2VySWQiOiJ1aWQyIn0.F7yAcpaMnXmC0drkOq363TAh7a5hfm5hfQpTY6vtJKA";
+    private static final String USER_1_X_TOKEN = "TEST";
+    private static final String USER_2_X_TOKEN = "TEST2";
     private static final String USER_1_ID = "uid";
     private static final String USER_2_ID = "uid2";
     private static final String USER_3_ID = "uid3";
-
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,6 +42,9 @@ public class EntryIntegrationTest {
     @Autowired
     private OfficeCapacityRepository officeCapacityRepository;
 
+    @MockBean
+    private JwtService jwtService;
+
     @BeforeEach
     public void deleteTables() {
         bookingRepository.deleteAll();
@@ -47,6 +53,8 @@ public class EntryIntegrationTest {
 
     @Test
     public void userCanRegisterThenEntryThenExitIntoAnEmptyHouse() throws Exception {
+        when(jwtService.parseToken(anyString(), any())).thenReturn(USER_1_ID);
+
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -73,6 +81,9 @@ public class EntryIntegrationTest {
 
     @Test
     public void twoUserCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
+
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -120,6 +131,8 @@ public class EntryIntegrationTest {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -144,6 +157,9 @@ public class EntryIntegrationTest {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
+
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -166,11 +182,12 @@ public class EntryIntegrationTest {
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
             .andExpect(content().string("{\"position\":0}"));
-
     }
 
     @Test
     public void userCantExitWithoutEntry() throws Exception {
+        when(jwtService.parseToken(matches(USER_1_X_TOKEN), any())).thenReturn(USER_1_ID);
+
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
