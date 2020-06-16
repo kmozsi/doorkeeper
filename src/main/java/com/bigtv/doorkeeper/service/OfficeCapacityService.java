@@ -42,7 +42,8 @@ public class OfficeCapacityService {
             capacity = new OfficeCapacity();
             capacity.setCapacity(capacityConfig.getInitialCapacity());
         }
-        capacity.setAllowedPercentage(capacityBody.getCapacity());
+        capacity.setCapacity(capacityBody.getCapacity());
+        capacity.setAllowedPercentage(capacityBody.getPercentage());
         log.info("New daily capacity set: " + capacity.getDailyCapacity());
         capacityRepository.save(capacity);
     }
