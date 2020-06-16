@@ -14,7 +14,6 @@ import javax.persistence.Id;
 @AllArgsConstructor(staticName = "of")
 public class OfficeCapacity {
 
-    // TODO Maybe the daily capacity (capacity * allowedPercentage / 100 could be cached)
     @Id
     @GeneratedValue
     private int id;
