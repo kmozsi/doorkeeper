@@ -51,7 +51,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -62,7 +62,6 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
 
         mockMvc.perform(post("/exit")
@@ -77,7 +76,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -89,7 +88,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -100,13 +99,11 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
 
         mockMvc.perform(post("/exit")
@@ -124,7 +121,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":false,\"position\":1}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
@@ -135,8 +132,7 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"permitted\":false}"));
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -148,7 +144,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":false,\"position\":1}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
