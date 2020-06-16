@@ -69,7 +69,7 @@ public class BookingService {
     }
 
     private Booking getActiveBooking(String userId) {
-        return bookingRepository.findByExitedAndUserId(false, userId)
+        return bookingRepository.findByExitedAndEnteredAndUserId(false, true, userId)
             .orElseThrow(EntryNotFoundException::new);
     }
 

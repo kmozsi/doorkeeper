@@ -12,5 +12,5 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     Booking findTopByOrderByOrdinalAsc();
 
     Optional<Booking> findByEnteredAndUserId(boolean entered, String userId);
-    Optional<Booking> findByExitedAndUserId(boolean exited, String userId);
+    Optional<Booking> findByExitedAndEnteredAndUserId(boolean exited, boolean entered, String userId);
 }
