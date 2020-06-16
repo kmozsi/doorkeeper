@@ -1,4 +1,4 @@
-package com.bigtv.doorkeeper;
+package com.karanteam.doorkeeper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

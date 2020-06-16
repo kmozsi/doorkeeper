@@ -1,8 +1,8 @@
-package com.bigtv.doorkeeper.service;
+package com.karanteam.doorkeeper.service;
 
-import com.bigtv.doorkeeper.config.CapacityConfig;
-import com.bigtv.doorkeeper.entity.OfficeCapacity;
-import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
+import com.karanteam.doorkeeper.config.CapacityConfig;
+import com.karanteam.doorkeeper.entity.OfficeCapacity;
+import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.model.CapacityBody;
 import org.springframework.stereotype.Service;

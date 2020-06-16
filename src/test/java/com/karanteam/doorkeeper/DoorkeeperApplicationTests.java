@@ -1,4 +1,4 @@
-package com.bigtv.doorkeeper;
+package com.karanteam.doorkeeper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

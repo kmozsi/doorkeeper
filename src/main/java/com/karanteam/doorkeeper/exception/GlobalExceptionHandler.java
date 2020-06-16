@@ -1,4 +1,4 @@
-package com.bigtv.doorkeeper.exception;
+package com.karanteam.doorkeeper.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.extern.slf4j.Slf4j;

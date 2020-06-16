@@ -1,9 +1,9 @@
-package com.bigtv.doorkeeper.controller;
+package com.karanteam.doorkeeper.controller;
 
-import com.bigtv.doorkeeper.service.BookingService;
-import com.bigtv.doorkeeper.enumeration.Role;
-import com.bigtv.doorkeeper.service.JwtService;
-import com.bigtv.doorkeeper.service.OfficeCapacityService;
+import com.karanteam.doorkeeper.service.BookingService;
+import com.karanteam.doorkeeper.enumeration.Role;
+import com.karanteam.doorkeeper.service.JwtService;
+import com.karanteam.doorkeeper.service.OfficeCapacityService;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.DoorApi;
 import org.openapitools.model.CapacityBody;

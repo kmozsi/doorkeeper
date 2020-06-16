@@ -1,9 +1,9 @@
-package com.bigtv.doorkeeper.service;
+package com.karanteam.doorkeeper.service;
 
-import com.bigtv.doorkeeper.entity.Booking;
-import com.bigtv.doorkeeper.exception.EntryForbiddenException;
-import com.bigtv.doorkeeper.exception.EntryNotFoundException;
-import com.bigtv.doorkeeper.repository.BookingRepository;
+import com.karanteam.doorkeeper.entity.Booking;
+import com.karanteam.doorkeeper.exception.EntryForbiddenException;
+import com.karanteam.doorkeeper.exception.EntryNotFoundException;
+import com.karanteam.doorkeeper.repository.BookingRepository;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.cache.annotation.CacheEvict;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
+import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
 public class BookingService {

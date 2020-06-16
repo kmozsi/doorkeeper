@@ -1,10 +1,9 @@
-package com.bigtv.doorkeeper.service;
+package com.karanteam.doorkeeper.service;
 
-import com.bigtv.doorkeeper.repository.BookingRepository;
+import com.karanteam.doorkeeper.repository.BookingRepository;
+import com.karanteam.doorkeeper.config.CachingConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
 public class BookingCacheService {
@@ -20,7 +19,7 @@ public class BookingCacheService {
         this.bookingRepository = bookingRepository;
     }
 
-    @Cacheable(value = POSITION_CACHE)
+    @Cacheable(value = CachingConfig.POSITION_CACHE)
     public int calculatePositionFromOrdinal(int ordinal) {
         return Math.max(ordinal - officeCapacityService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1, 0);
     }
