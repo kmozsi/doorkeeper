@@ -9,6 +9,8 @@ import org.openapitools.model.StatusResponse;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
@@ -45,6 +47,11 @@ public class BookingService {
     }
 
     public RegisterResponse register(String userId) {
+        Optional<Booking> alreadyWaitingUser = findWaitingBooking(userId);
+        if (alreadyWaitingUser.isPresent()) {
+            return createRegisterResponse(calculatePosition(alreadyWaitingUser.get()));
+        }
+
         Booking booking = bookingRepository.save(Booking.builder().userId(userId).build());
         return createRegisterResponse(calculatePosition(booking));
     }
@@ -67,7 +74,10 @@ public class BookingService {
     }
 
     private Booking getWaitingBooking(String userId) {
-        return bookingRepository.findByEnteredAndUserId(false, userId)
-            .orElseThrow(EntryNotFoundException::new);
+        return findWaitingBooking(userId).orElseThrow(EntryNotFoundException::new);
+    }
+
+    private Optional<Booking> findWaitingBooking(String userId) {
+        return bookingRepository.findByEnteredAndUserId(false, userId);
     }
 }
