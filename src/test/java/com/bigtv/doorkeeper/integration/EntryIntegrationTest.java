@@ -5,7 +5,6 @@ import com.bigtv.doorkeeper.entity.OfficeCapacity;
 import com.bigtv.doorkeeper.repository.BookingRepository;
 import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
 import com.bigtv.doorkeeper.service.JwtService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
