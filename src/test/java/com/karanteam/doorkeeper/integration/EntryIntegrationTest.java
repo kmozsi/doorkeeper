@@ -204,7 +204,7 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isConflict());
+            .andExpect(status().isNotFound());
 
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -268,7 +268,7 @@ public class EntryIntegrationTest {
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isConflict());
+            .andExpect(status().isNotFound());
     }
 
     private void thereIsTwoPlaceForToday() {
