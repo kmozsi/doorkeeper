@@ -1,13 +1,15 @@
 package com.bigtv.doorkeeper.service;
 
 import com.bigtv.doorkeeper.entity.Booking;
+import com.bigtv.doorkeeper.exception.EntryForbiddenException;
 import com.bigtv.doorkeeper.exception.EntryNotFoundException;
 import com.bigtv.doorkeeper.repository.BookingRepository;
-import org.openapitools.model.EntryResponse;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 import static com.bigtv.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
@@ -31,14 +33,13 @@ public class BookingService {
         bookingRepository.save(userInBuilding);
     }
 
-    public EntryResponse entry(String userId) {
+    public void entry(String userId) {
         Booking waitingBooking = getWaitingBooking(userId);
         if (!isEntryPermitted(waitingBooking)) {
-            return new EntryResponse().permitted(false);
+            throw new EntryForbiddenException();
         }
         waitingBooking.setEntered(true);
         bookingRepository.save(waitingBooking);
-        return new EntryResponse().permitted(true);
     }
 
     private boolean isEntryPermitted(Booking user) {
@@ -46,12 +47,17 @@ public class BookingService {
     }
 
     public RegisterResponse register(String userId) {
+        Optional<Booking> alreadyWaitingUser = findWaitingBooking(userId);
+        if (alreadyWaitingUser.isPresent()) {
+            return createRegisterResponse(calculatePosition(alreadyWaitingUser.get()));
+        }
+
         Booking booking = bookingRepository.save(Booking.builder().userId(userId).build());
         return createRegisterResponse(calculatePosition(booking));
     }
 
     private RegisterResponse createRegisterResponse(int position) {
-        return new RegisterResponse().accepted(position <= 0).position(position);
+        return new RegisterResponse().canEnter(position <= 0).position(position);
     }
 
     public StatusResponse status(String userId) {
@@ -63,12 +69,15 @@ public class BookingService {
     }
 
     private Booking getActiveBooking(String userId) {
-        return bookingRepository.findByExitedAndUserId(false, userId)
+        return bookingRepository.findByExitedAndEnteredAndUserId(false, true, userId)
             .orElseThrow(EntryNotFoundException::new);
     }
 
     private Booking getWaitingBooking(String userId) {
-        return bookingRepository.findByEnteredAndUserId(false, userId)
-            .orElseThrow(EntryNotFoundException::new);
+        return findWaitingBooking(userId).orElseThrow(EntryNotFoundException::new);
+    }
+
+    private Optional<Booking> findWaitingBooking(String userId) {
+        return bookingRepository.findByEnteredAndUserId(false, userId);
     }
 }

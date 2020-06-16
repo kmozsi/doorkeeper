@@ -1,0 +1,1675 @@
+{
+	"info": {
+		"_postman_id": "82165044-8ae2-4d43-ae81-d9f9fa905b03",
+		"name": "Doorkeper",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Set the capacity of the office",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ecaf3950-df06-401b-a341-d5216b073f45",
+						"exec": [
+							"xToken = pm.iterationData.get(\"token_0\");\r",
+							"pm.variables.set(\"xToken\", xToken);\r",
+							"\r",
+							"pm.collectionVariables.set(\"index\", 1);\r",
+							"postman.setNextRequest(\"Register booking\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c285ebb4-9c90-402c-92e2-daf2d3592ee4",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"capacity\": \"100\",\n    \"percentage\": \"10\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/capacity",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"capacity"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"capacity\": \"<integer>\",\n    \"percentage\": \"<integer>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/capacity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"capacity"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"capacity\": \"<integer>\",\n    \"percentage\": \"<integer>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/capacity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"capacity"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Done",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"capacity\": \"<integer>\",\n    \"percentage\": \"<integer>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/capacity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"capacity"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain"
+						}
+					],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "Register booking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "42122bdc-6d26-4456-83d2-5730b6581b87",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "74b15c6b-5461-41dd-a0a7-205ea2c6bd77",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"index++;\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Register booking\")\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"index\", 1);\r",
+							"    postman.setNextRequest(\"Get status of booking\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Acceptance result and position",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"accepted\": \"<boolean>\",\n \"position\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get status of booking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a7da4da4-3c8e-4772-b36f-aaa75155136e",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5728db44-84ce-43b9-9e56-f67fb326bd72",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var index = pm.collectionVariables.get(\"index\")\r",
+							"var position = pm.response.json().position\r",
+							"\r",
+							"pm.test(\"SMF - OM: query orders response - OK\", function() {\r",
+							"    pm.expect(position).to.equal(Math.max(0, index - 10));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"index++;\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Get status of booking\")\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"index\", 1);\r",
+							"    postman.setNextRequest(\"Enter the office\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Position",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"position\": \"<integer>\"\n}"
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Enter the office",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "fc008aea-318a-4b20-ae8c-2c247a5d274f",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5df7af49-5b0e-4ea1-892e-3371167bb601",
+						"exec": [
+							"var index = pm.collectionVariables.get(\"index\")\r",
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(index <= 10 ? 200 : 400);\r",
+							"});\r",
+							"\r",
+							"index += 2; // 1,3,5,7,9 can enter, 11,13,15 can not\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Enter the office\")\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"index\", 1);\r",
+							"    postman.setNextRequest(\"Exit the office\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/entry",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"entry"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Permition",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"permitted\": \"<boolean>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Exit the office",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "738fe145-79d2-4512-a2be-4d56cea26f47",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6fe8f252-63b4-4698-828d-10178ea9d091",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"index += 8; // 1,9 exit to make 2 space\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Exit the office\")\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"index\", 11);\r",
+							"    postman.setNextRequest(\"Get new status\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/exit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"exit"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exit"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Exit",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain"
+						}
+					],
+					"cookie": [],
+					"body": ""
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exit"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get new status",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b89d2b87-03c5-4b2a-9808-aba27cf72a7a",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "fe8a89cf-ea99-4034-842c-1754565a8ecc",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var index = pm.collectionVariables.get(\"index\")\r",
+							"var position = pm.response.json().position\r",
+							"\r",
+							"pm.test(\"SMF - OM: query orders response - OK\", function() {\r",
+							"    pm.expect(position).to.equal(Math.max(0, index - 10 - 2)); // 2 exited\r",
+							"});\r",
+							"\r",
+							"index++;\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Get new status\")\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"index\", 11);\r",
+							"    postman.setNextRequest(\"Re-Enter the office\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "(Required) ",
+						"key": "X-Token",
+						"value": "{{xToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Position",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"position\": \"<integer>\"\n}"
+				},
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Re-Enter the office",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "788daac5-667b-481b-8f85-78430d1cf93a",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cb84c821-edc5-4d92-827a-d9d3a2b7c127",
+						"exec": [
+							"var index = pm.collectionVariables.get(\"index\")\r",
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(index <= 12 ? 200 : 400);\r",
+							"});\r",
+							"\r",
+							"index++; // 11 and 12 can enter, 13,14,15 can not\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Re-Enter the office\")\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"index\", 9);\r",
+							"    postman.setNextRequest(\"Register booking (return)\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/entry",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"entry"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Permition",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"permitted\": \"<boolean>\"\n}"
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Register booking (return)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9cebc002-28bf-4ffd-b994-614075740505",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "dc4905c1-93df-47c2-83a2-fe381ce9d65a",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var position = pm.response.json().position // Should be 4 -> 13,14,15 waiting before 9\r",
+							"\r",
+							"pm.test(\"SMF - OM: query orders response - OK\", function() {\r",
+							"    pm.expect(position).to.equal(4); // 2 exited, 3 waiting\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"index\", 1);\r",
+							"postman.setNextRequest(\"Enter the office (cleanup)\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Acceptance result and position",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"accepted\": \"<boolean>\",\n \"position\": \"<integer>\"\n}"
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Enter the office (cleanup)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "014c9644-32ef-4247-865e-c6e46afe08e8",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);\r",
+							"\r",
+							"if(index <= 15) {\r",
+							"    postman.setNextRequest(\"Exit the office (cleanup)\")\r",
+							"} else {\r",
+							"    postman.setNextRequest(\"\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "382cb327-a0c7-41ab-bd01-d7af1ffe4df4",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Token",
+						"value": "{{xToken}}",
+						"description": "(Required) "
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/entry",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"entry"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Permition",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"entry"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"permitted\": \"<boolean>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Exit the office (cleanup)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "23f874cf-5449-452e-8d56-10c09dd18675",
+						"exec": [
+							"index = pm.collectionVariables.get(\"index\")\r",
+							"console.log(index)\r",
+							"\r",
+							"xToken = pm.iterationData.get(\"token_\" + index);\r",
+							"pm.variables.set(\"xToken\", xToken);\r",
+							"\r",
+							"index++;\r",
+							"if(index <= 15) {\r",
+							"    pm.collectionVariables.set(\"index\", index);\r",
+							"    postman.setNextRequest(\"Enter the office (cleanup)\")\r",
+							"} else {\r",
+							"    postman.setNextRequest(\"\")\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2f38f97d-84fd-4b04-9df3-c78dee5c4253",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "(Required) ",
+						"key": "X-Token",
+						"value": "{{xToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/exit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"exit"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Exit",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain"
+						}
+					],
+					"cookie": [],
+					"body": ""
+				},
+				{
+					"name": "unexpected error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exit"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				},
+				{
+					"name": "Forbidden",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "<string>",
+								"description": "(Required) "
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/exit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"exit"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "22bf60a3-cd22-4d7b-895a-b8ff91140b30",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2922ee97-a5a5-44ba-b0c0-84404f1adcc8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "070ab4fa-6dc8-44cd-888a-e47b1ceb8313",
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"id": "e5c356d0-c1a4-415b-990b-4ed3a76238ea",
+			"key": "register",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"id": "fe083332-9c63-4084-a631-96077cf4c958",
+			"key": "index",
+			"value": 9,
+			"type": "number"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
