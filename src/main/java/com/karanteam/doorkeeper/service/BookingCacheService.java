@@ -5,6 +5,9 @@ import com.karanteam.doorkeeper.config.CachingConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service to cache the users current position.
+ */
 @Service
 public class BookingCacheService {
 
