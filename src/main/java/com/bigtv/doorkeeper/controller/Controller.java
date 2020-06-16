@@ -7,7 +7,6 @@ import com.bigtv.doorkeeper.service.OfficeCapacityService;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.DoorApi;
 import org.openapitools.model.CapacityBody;
-import org.openapitools.model.EntryResponse;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +27,11 @@ public class Controller implements DoorApi {
     }
 
     @Override
-    public ResponseEntity<EntryResponse> entry(String xToken) {
+    public ResponseEntity<Void> entry(String xToken) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         log.info("Received entry call with userId: " + userId);
-        return ResponseEntity.ok(bookingService.entry(userId));
+        bookingService.entry(userId);
+        return ResponseEntity.ok().build();
     }
 
     @Override
