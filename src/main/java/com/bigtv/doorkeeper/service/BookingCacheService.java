@@ -22,7 +22,7 @@ public class BookingCacheService {
 
     @Cacheable(value = POSITION_CACHE)
     public int calculatePositionFromOrdinal(int ordinal) {
-        return ordinal - officeCapacityService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1;
+        return Math.max(ordinal - officeCapacityService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1, 0);
     }
 
     private int getFirstOrdinal() {

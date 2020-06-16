@@ -33,7 +33,7 @@ public class BookingService {
 
     public EntryResponse entry(String userId) {
         Booking waitingBooking = getWaitingBooking(userId);
-        if (isEntryPermitted(waitingBooking)) {
+        if (!isEntryPermitted(waitingBooking)) {
             return new EntryResponse().permitted(false);
         }
         waitingBooking.setEntered(true);
@@ -42,7 +42,7 @@ public class BookingService {
     }
 
     private boolean isEntryPermitted(Booking user) {
-        return bookingCacheService.calculatePositionFromOrdinal(user.getOrdinal()) > 0;
+        return bookingCacheService.calculatePositionFromOrdinal(user.getOrdinal()) <= 0;
     }
 
     public RegisterResponse register(String userId) {
@@ -51,7 +51,7 @@ public class BookingService {
     }
 
     private RegisterResponse createRegisterResponse(int position) {
-        return new RegisterResponse().accepted(position < 0).position(Math.max(position, 0));
+        return new RegisterResponse().accepted(position <= 0).position(position);
     }
 
     public StatusResponse status(String userId) {

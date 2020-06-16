@@ -53,9 +53,59 @@ public class EntryIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
 
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":0}"));
+
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(content().string("{\"permitted\":true}"))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/exit")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void twoUserCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":0}"));
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":0}"));
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
+            .andExpect(content().string("{\"permitted\":true}"))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(content().string("{\"permitted\":true}"))
             .andExpect(status().isOk());
 
