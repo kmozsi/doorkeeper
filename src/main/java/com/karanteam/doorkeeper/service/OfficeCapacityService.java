@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Service to handle the daily capacity of the office.
+ */
 @Service
 @Slf4j
 public class OfficeCapacityService {

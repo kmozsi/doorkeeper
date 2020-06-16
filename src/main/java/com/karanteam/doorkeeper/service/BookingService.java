@@ -13,6 +13,9 @@ import java.util.Optional;
 
 import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
+/**
+ * Service for office booking functions.
+ */
 @Service
 public class BookingService {
 
@@ -60,6 +63,11 @@ public class BookingService {
         return new RegisterResponse().canEnter(position <= 0).position(position);
     }
 
+    /**
+     * Creates response for status request. The position is 0 if the user can enter the office.
+     * @param userId Unique identifier of the user.
+     * @return @StatusResponse
+     */
     public StatusResponse status(String userId) {
         return new StatusResponse().position(calculatePosition(getWaitingBooking(userId)));
     }
