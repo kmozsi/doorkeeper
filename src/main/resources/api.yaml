@@ -5,11 +5,11 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://doorkeeper.com/api/v1
+  - url: http://localhost:8080/
 paths:
   /register:
     post:
-      summary: register blabla
+      summary: Register booking
       operationId: register
       tags:
         - door
@@ -40,7 +40,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /status:
     get:
-      summary: status blabla
+      summary: Get status of booking
       operationId: getStatus
       tags:
         - door
@@ -71,7 +71,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /entry:
     post:
-      summary: entry blabla
+      summary: Enter the office
       operationId: entry
       tags:
         - door
@@ -102,7 +102,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /exit:
     post:
-      summary: exit blabla
+      summary: Exit the office
       operationId: exit
       tags:
         - door
@@ -129,7 +129,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /capacity:
     patch:
-      summary: capacity blabla
+      summary: Set the capacity of the office
       operationId: setCapacity
       tags:
         - door
