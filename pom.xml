@@ -8,7 +8,7 @@
 		<version>2.3.0.RELEASE</version>
 		<relativePath/>
 	</parent>
-	<groupId>com.bigtv</groupId>
+	<groupId>com.karanteam</groupId>
 	<artifactId>doorkeeper</artifactId>
 	<version>1.0.0</version>
 	<name>doorkeeper</name>
@@ -136,7 +136,7 @@
             <artifactId>dockerfile-maven-plugin</artifactId>
             <version>1.4.12</version>
             <configuration>
-              <repository>com.bigtv/${project.artifactId}</repository>
+              <repository>com.karanteam/${project.artifactId}</repository>
               <tag>${project.version}</tag>
               <buildArgs>
                 <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>

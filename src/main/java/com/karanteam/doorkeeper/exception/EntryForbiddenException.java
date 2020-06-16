@@ -1,4 +1,4 @@
-package com.bigtv.doorkeeper.exception;
+package com.karanteam.doorkeeper.exception;
 
 public class EntryForbiddenException extends RuntimeException {
 }

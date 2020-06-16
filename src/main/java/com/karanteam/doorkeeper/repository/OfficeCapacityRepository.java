@@ -1,6 +1,6 @@
-package com.bigtv.doorkeeper.repository;
+package com.karanteam.doorkeeper.repository;
 
-import com.bigtv.doorkeeper.entity.OfficeCapacity;
+import com.karanteam.doorkeeper.entity.OfficeCapacity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

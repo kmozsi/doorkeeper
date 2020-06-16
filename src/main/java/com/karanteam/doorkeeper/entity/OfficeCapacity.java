@@ -1,4 +1,4 @@
-package com.bigtv.doorkeeper.entity;
+package com.karanteam.doorkeeper.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

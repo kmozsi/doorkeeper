@@ -19,5 +19,5 @@ The data file contains valid json tokens with the user's identifier.
 Run the following commands in the project's root directory:
 ```
 mvn clean install -P docker
-docker run -p 8080:8080 -t com.bigtv/doorkeeper:1.0.0
+docker run -p 8080:8080 -t com.karanteam/doorkeeper:1.0.0
 ```

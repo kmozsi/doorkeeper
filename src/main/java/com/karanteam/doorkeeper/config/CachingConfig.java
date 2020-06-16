@@ -1,4 +1,4 @@
-package com.bigtv.doorkeeper.config;
+package com.karanteam.doorkeeper.config;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;

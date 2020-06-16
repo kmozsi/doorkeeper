@@ -1,10 +1,10 @@
-package com.bigtv.doorkeeper.integration;
+package com.karanteam.doorkeeper.integration;
 
-import com.bigtv.doorkeeper.entity.Booking;
-import com.bigtv.doorkeeper.entity.OfficeCapacity;
-import com.bigtv.doorkeeper.repository.BookingRepository;
-import com.bigtv.doorkeeper.repository.OfficeCapacityRepository;
-import com.bigtv.doorkeeper.service.JwtService;
+import com.karanteam.doorkeeper.entity.Booking;
+import com.karanteam.doorkeeper.entity.OfficeCapacity;
+import com.karanteam.doorkeeper.repository.BookingRepository;
+import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
+import com.karanteam.doorkeeper.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
