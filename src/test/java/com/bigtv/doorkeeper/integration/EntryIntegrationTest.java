@@ -25,9 +25,11 @@ public class EntryIntegrationTest {
     // TODO mock jwtService
     private static final String USER_1_X_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNjE2NTM5MTIyLCJpYXQiOjE1MTYyMzkwMjIsInJvbGVzIjpbIkVNUExPWUVFIiwiSFIiXSwidXNlcklkIjoidWlkIn0.cGsC9yA77vTcSK7He0D3Vt0OBSWQvQS33AO387cdA1Q";
     private static final String USER_2_X_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRpYmkiLCJleHAiOjE2MTY1MzkxMjIsImlhdCI6MTUxNjIzOTAyMiwicm9sZXMiOlsiRU1QTE9ZRUUiLCJIUiJdLCJ1c2VySWQiOiJ1aWQyIn0.F7yAcpaMnXmC0drkOq363TAh7a5hfm5hfQpTY6vtJKA";
+    private static final String USER_4_X_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNjE2NTM5MTIyLCJpYXQiOjE1MTYyMzkwMjIsInJvbGVzIjpbIkVNUExPWUVFIiwiSFIiXSwidXNlcklkIjoidWlkNCJ9.bgIbdawgynq8zVykiTpTVjn6RuQgYlXiy7wJUjAO8N8";
     private static final String USER_1_ID = "uid";
     private static final String USER_2_ID = "uid2";
     private static final String USER_3_ID = "uid3";
+    private static final String USER_4_ID = "uid4";
 
 
     @Autowired
@@ -46,33 +48,7 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void userCanRegisterThenEntryThenExitIntoAnEmptyHouse() throws Exception {
-        mockMvc.perform(post("/register")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"accepted\":true,\"position\":0}"));
-
-        mockMvc.perform(get("/status")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
-
-        mockMvc.perform(post("/entry")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(content().string("{\"permitted\":true}"))
-            .andExpect(status().isOk());
-
-        mockMvc.perform(post("/exit")
-            .contentType(APPLICATION_JSON)
-            .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void twoUserCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
+    public void usersCanRegisterThenEntryIntoAnEmptyHouse() throws Exception {
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
@@ -140,7 +116,7 @@ public class EntryIntegrationTest {
     }
 
     @Test
-    public void exitingShouldCreatePlaceForWaitingUser() throws Exception {
+    public void exitingShouldCreatePlacesForWaitingUsers() throws Exception {
         thereIsTwoPlaceForToday();
         thereAreTwoEmployeeInTheBuilding();
 
@@ -150,11 +126,23 @@ public class EntryIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(content().string("{\"accepted\":false,\"position\":1}"));
 
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"accepted\":false,\"position\":2}"));
+
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
             .andExpect(content().string("{\"position\":1}"));
+
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":2}"));
 
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
@@ -167,6 +155,11 @@ public class EntryIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(content().string("{\"position\":0}"));
 
+        mockMvc.perform(get("/status")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string("{\"position\":1}"));
     }
 
     @Test
