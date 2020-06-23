@@ -19,9 +19,16 @@ public class ImageServiceTest {
     private ImageService imageService;
 
     @Test
-    public void testOfficeLoading() throws IOException {
+    public void testScanOffice() throws IOException {
         File file = ResourceUtils.getFile("classpath:image/rectangles.png");
-        Office office = imageService.processImage(file);
+        Office office = imageService.scanOffice(file);
+        Assertions.assertEquals(new Dimension(237, 422), office.getDimension());
+    }
+
+    @Test
+    public void testScanOfficeWithOpenCV() throws IOException {
+        File file = ResourceUtils.getFile("classpath:image/rectangles.png");
+        Office office = imageService.scanOfficeWithOpenCV(file);
         Assertions.assertEquals(new Dimension(237, 422), office.getDimension());
     }
 }
