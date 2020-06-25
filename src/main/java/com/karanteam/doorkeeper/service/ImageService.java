@@ -35,12 +35,20 @@ public class ImageService {
         return Office.builder().dimension(new Dimension(image.getWidth(), image.getHeight())).build();
     }
 
-    public byte[] findPositions(int threshold) throws IOException {
+    public byte[] findPositions(boolean gray, boolean filtered, int threshold, int maxValue, int threshMethod, int matchingThreshold) throws IOException {
         File officeFile = readImage("office_cut_2.png");
-        File chairFile = readImage("chair_contour_2.png");
-
         Mat officeMat = readFileToMat(officeFile);
+        Mat originalMat = officeMat.clone();
+
+        Mat preparedMat = prepareImage(officeMat, gray, filtered, threshold, maxValue, threshMethod);
+
+
+
+
+        File chairFile = readImage("chair_binary.png");
         Mat chairMat = readFileToMat(chairFile);
+
+        Mat preparedChair = prepareImage(chairMat, gray, filtered, threshold, maxValue, threshMethod);
 
         int method = Imgproc.TM_CCOEFF;
 //        int method = Imgproc.TM_CCOEFF_NORMED;
@@ -48,12 +56,49 @@ public class ImageService {
 //        int method = Imgproc.TM_CCORR_NORMED;
 //        int method = Imgproc.TM_SQDIFF;
 //        int method = Imgproc.TM_SQDIFF_NORMED;
+        Mat result = new Mat();
+        Imgproc.matchTemplate(preparedMat, preparedChair, result, method);
 
-        Mat resultMat = positionMatching(officeMat, chairMat, method, threshold);
-        return writeMatToImage(resultMat);
+        Imgproc.threshold(result, result, matchingThreshold, Double.MAX_VALUE, Imgproc.THRESH_TOZERO);
+
+        Mat positions = new Mat();
+        Core.findNonZero(result, positions);
+
+        IntStream.range(0, (int)positions.size().height).forEach(
+            index -> {
+                double[] coords = positions.get(index, 0);
+                Rect rect = new Rect((int)coords[0], (int)coords[1], 20, 20);
+                Imgproc.rectangle(originalMat, rect, new Scalar(100,0,200));
+            }
+        );
+
+
+
+//        Mat resultMat = positionMatching(preparedMat, chairMat, method, matchingThreshold);
+        return writeMatToImage(originalMat);
     }
 
-    public byte[] processImage(boolean gray, PositionConfiguration configuration) throws IOException {
+    //        public static final int THRESH_BINARY = 0;
+//        public static final int THRESH_BINARY_INV = 1;
+//        public static final int THRESH_TRUNC = 2;
+//        public static final int THRESH_TOZERO = 3;
+//        public static final int THRESH_TOZERO_INV = 4;
+//        public static final int THRESH_MASK = 7;
+//        public static final int THRESH_OTSU = 8;
+//        public static final int THRESH_TRIANGLE = 16;
+    private Mat prepareImage(Mat mat, boolean gray, boolean filtered, int threshold, int maxValue, int threshMethod) throws IOException {
+        if (gray) {
+            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY, 0);
+        }
+
+        if (filtered) {
+            Imgproc.threshold(mat, mat, threshold, maxValue, threshMethod);
+        }
+
+        return mat;
+    }
+
+    public byte[] processImage(boolean gray, boolean filtered, PositionConfiguration configuration, int threshold, int maxValue, int threshMethod) throws IOException {
         File officeFile = readImage("office_cut.png");
         File chairFile = readImage("chair_contour_2.png");
 
@@ -65,11 +110,24 @@ public class ImageService {
         configuration.getPositions()
             .forEach(position -> insertPictureInPicture(officeMat, chairMat, position.getX(), position.getY()));
 
-        Mat resultPicture = officeMat.clone();
+
+//        public static final int THRESH_BINARY = 0;
+//        public static final int THRESH_BINARY_INV = 1;
+//        public static final int THRESH_TRUNC = 2;
+//        public static final int THRESH_TOZERO = 3;
+//        public static final int THRESH_TOZERO_INV = 4;
+//        public static final int THRESH_MASK = 7;
+//        public static final int THRESH_OTSU = 8;
+//        public static final int THRESH_TRIANGLE = 16;
+
         if (gray) {
-            Imgproc.cvtColor(officeMat, resultPicture, Imgproc.COLOR_RGB2GRAY, 0);
+            Imgproc.cvtColor(officeMat, officeMat, Imgproc.COLOR_RGB2GRAY, 0);
         }
-        return writeMatToImage(resultPicture);
+
+        if (filtered) {
+            Imgproc.threshold(officeMat, officeMat, threshold, maxValue, threshMethod);
+        }
+        return writeMatToImage(officeMat);
     }
 
     private void insertPictureInPicture(Mat original, Mat insert, int x, int y) {

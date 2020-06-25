@@ -26,12 +26,14 @@ public class ImageProcessingController {
         produces = MediaType.IMAGE_PNG_VALUE
     )
     public ResponseEntity<byte[]> setPositions(
+        @RequestParam(required = false, defaultValue = "false") boolean filtered,
         @RequestParam(required = false, defaultValue = "false") boolean gray,
-//        @RequestParam(required = false, defaultValue = "0")  int x,
-//        @RequestParam(required = false, defaultValue = "0")  int y,
+        @RequestParam(required = false, defaultValue = "0")  int threshold,
+        @RequestParam(required = false, defaultValue = "0")  int maxValue,
+        @RequestParam(required = false, defaultValue = "3")  int threshMethod,
         @RequestBody PositionConfiguration configuration
         ) throws IOException {
-        return ResponseEntity.ok(imageService.processImage(gray, configuration));
+        return ResponseEntity.ok(imageService.processImage(gray, filtered, configuration, threshold, maxValue, threshMethod));
     }
 
     @GetMapping(
@@ -39,9 +41,14 @@ public class ImageProcessingController {
         produces = MediaType.IMAGE_PNG_VALUE
     )
     public ResponseEntity<byte[]> findPositions(
-        @RequestParam(required = false, defaultValue = "1000") int threshold
+        @RequestParam(required = false, defaultValue = "false") boolean filtered,
+        @RequestParam(required = false, defaultValue = "false") boolean gray,
+        @RequestParam(required = false, defaultValue = "0")  int threshold,
+        @RequestParam(required = false, defaultValue = "0")  int maxValue,
+        @RequestParam(required = false, defaultValue = "3")  int threshMethod,
+        @RequestParam(required = false, defaultValue = "3")  int matchingThreshold
     ) throws IOException {
-        return ResponseEntity.ok(imageService.findPositions(threshold));
+        return ResponseEntity.ok(imageService.findPositions(gray, filtered, threshold, maxValue, threshMethod, matchingThreshold));
     }
 
 }
