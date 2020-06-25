@@ -2,7 +2,6 @@ package com.karanteam.doorkeeper.controller;
 
 import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.enumeration.Role;
-import com.karanteam.doorkeeper.service.ImageService;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.OfficeCapacityService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +9,8 @@ import org.openapitools.api.DoorApi;
 import org.openapitools.model.CapacityBody;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
 
 @RestController
 @Slf4j
@@ -24,13 +19,11 @@ public class Controller implements DoorApi {
     private final BookingService bookingService;
     private final OfficeCapacityService capacityService;
     private final JwtService jwtService;
-    private final ImageService imageService;
 
-    public Controller(BookingService bookingService, OfficeCapacityService capacityService, JwtService jwtService, ImageService imageService) {
+    public Controller(BookingService bookingService, OfficeCapacityService capacityService, JwtService jwtService) {
         this.bookingService = bookingService;
         this.capacityService = capacityService;
         this.jwtService = jwtService;
-        this.imageService = imageService;
     }
 
     /**
@@ -100,13 +93,5 @@ public class Controller implements DoorApi {
         log.info("Received set capacity call with userId: " + userId);
         capacityService.setCapacity(capacityBody);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(
-        value = "/picture",
-        produces = MediaType.IMAGE_PNG_VALUE
-    )
-    public ResponseEntity<byte[]> printDeliveryNote() throws IOException {
-        return ResponseEntity.ok(imageService.getImage());
     }
 }

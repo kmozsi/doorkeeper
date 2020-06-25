@@ -11,8 +11,8 @@ import org.springframework.util.ResourceUtils;
 import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -21,36 +21,42 @@ import java.util.List;
 @Service
 public class ImageService {
 
+    private static final String BASE_PATH = "/home/gincsait/Dokumentumok/doorkeeper/";
+
     public ImageService() {
         OpenCV.loadShared();
     }
 
-    public byte[] getImage() throws IOException {
-        File imageFile = ResourceUtils.getFile("/home/gincsait/Dokumentumok/doorkeeper/office_cut.png");
-//        byte[] bytes = Files.readAllBytes(imageFile.toPath());
-        return transform(imageFile);
+    public byte[] processImage(boolean gray) throws IOException {
+        File officeImage = readImage("office_cut.png");
+
+        Mat originalPicture = readFileToMat(officeImage);
+        Mat resultPicture = originalPicture.clone();
+
+        if (gray) {
+            Imgproc.cvtColor(originalPicture, resultPicture, Imgproc.COLOR_RGB2GRAY, 0);
+        }
+
+        return writeMatToImage(resultPicture);
     }
 
-    public byte[] transform(File imageFile) throws IOException {
-        Mat originalPicture = readFileToMat(imageFile);
-        Mat resultPicture = new Mat();
 
-//        Mat blurredImage = new Mat();
-//        Mat hsvImage = new Mat();
-//        Mat mask = new Mat();
-//        Mat morphOutput = new Mat();
-//
+    private File readImage(String imageName) throws FileNotFoundException {
+        return ResourceUtils.getFile(BASE_PATH + imageName);
+    }
+
+    private byte[] writeMatToImage(Mat mat) {
+        MatOfByte outputBytes = new MatOfByte();
+        Imgcodecs.imencode(".png", mat, outputBytes);
+        return outputBytes.toArray();
+    }
+
+
+    public byte[] transform(File imageFile) throws IOException {
 //        Imgproc.blur(originalPicture, blurredImage, new Size(7, 7));
 //        Imgproc.cvtColor(blurredImage, hsvImage, Imgproc.COLOR_BGR2HSV);
-
 //        Imgproc.cvtColor(originalPicture, grayPicture, Imgproc.COLOR_RGB2GRAY, 0);
-
-        Imgproc.cvtColor(originalPicture, resultPicture, Imgproc.COLOR_RGB2GRAY, 0);
-
-
-        MatOfByte outputBytes = new MatOfByte();
-        Imgcodecs.imencode(".png", resultPicture, outputBytes);
-        return outputBytes.toArray();
+        return null;
     }
 
     public Office scanOffice(File imageFile) throws IOException {
