@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class ImageService {
 
-    private static final String BASE_PATH = "/home/gincsait/Dokumentumok/doorkeeper/";
+    private static final String BASE_PATH = "classpath:image/";
 
     public ImageService() {
         OpenCV.loadShared();
