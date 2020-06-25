@@ -5,7 +5,7 @@ import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.service.JwtService;
-import com.karanteam.doorkeeper.service.OfficeCapacityService;
+import com.karanteam.doorkeeper.service.AdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ControllerTest {
+public class BookingControllerTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
     private static final String TOKEN = "TEST";
@@ -34,7 +34,7 @@ public class ControllerTest {
     private BookingService bookingService;
 
     @MockBean
-    private OfficeCapacityService officeCapacityService;
+    private AdminService adminService;
 
     @MockBean
     private JwtService jwtService;
@@ -201,7 +201,7 @@ public class ControllerTest {
             .header(HEADER_TOKEN_NAME, TOKEN))
             .andExpect(status().isForbidden());
 
-        verify(officeCapacityService, never()).setCapacity(any());
+        verify(adminService, never()).setCapacity(any());
     }
 
     @Test
@@ -214,7 +214,7 @@ public class ControllerTest {
             .header(HEADER_TOKEN_NAME, TOKEN))
             .andExpect(status().isOk());
 
-        verify(officeCapacityService, times(1)).setCapacity(any());
-        verifyNoMoreInteractions(officeCapacityService);
+        verify(adminService, times(1)).setCapacity(any());
+        verifyNoMoreInteractions(adminService);
     }
 }

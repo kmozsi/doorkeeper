@@ -11,3 +11,4 @@ jwt:
 application:
   initialCapacity: 250
   initialPercentage: 10
+  initialMinDistance: 5

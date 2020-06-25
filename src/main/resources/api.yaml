@@ -143,41 +143,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /capacity:
-    patch:
-      summary: Set the capacity of the office
-      operationId: setCapacity
-      tags:
-        - door
-      parameters:
-        - in: header
-          name: X-Token
-          schema:
-            type: string
-          required: true
-      requestBody:
-        description: Contains new capacity and percentage values
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CapacityBody'
-      responses:
-        '200':
-          description: Done
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        '500':
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
   /vip:
     get:
       summary: List VIP users
@@ -281,6 +246,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /capacity:
+    patch:
+      summary: Set the capacity rules of the office
+      operationId: setCapacity
+      tags:
+        - admin
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Contains new capacity, percentage and minimal distance values
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapacityBody'
+      responses:
+        '200':
+          description: Done
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     RegisterResponse:
@@ -303,11 +302,18 @@ components:
           format: int32
     CapacityBody:
       type: object
+      required:
+        - capacity
+        - percentage
+        - minimalDistance
       properties:
         capacity:
           type: integer
           format: int32
         percentage:
+          type: integer
+          format: int32
+        minimalDistance:
           type: integer
           format: int32
     VipUsers:
