@@ -26,6 +26,9 @@ public class BookingServiceTest {
     private BookingService bookingService;
 
     @MockBean
+    private VipService vipService;
+
+    @MockBean
     private BookingRepository bookingRepository;
 
     @MockBean
@@ -35,32 +38,35 @@ public class BookingServiceTest {
         .userId(USER_ID).ordinal(1).build();
     private static final Booking activeBooking = Booking.builder()
         .userId(USER_ID).ordinal(1).entered(true).build();
-    private static final Booking closedBooking = Booking.builder()
-        .userId(USER_ID).ordinal(1).entered(true).exited(true).build();
 
     @Test
-    public void callingExitWithUserNotInBuildingShouldThrowException() {
-        when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
-            .thenReturn(Optional.empty());
-        Assertions.assertThrows(EntryNotFoundException.class, () -> bookingService.exit(USER_ID));
+    public void callingExitWithVipUser() {
+        when(vipService.isVip(anyString())).thenReturn(true);
+
+        bookingService.exit(USER_ID);
+
+        verify(bookingCacheService, never()).exit(anyString());
     }
 
     @Test
-    public void callingExitShouldCloseBooking() {
-        when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
-            .thenReturn(Optional.of(activeBooking));
+    public void callingExitWithRegularUser() {
+        when(vipService.isVip(anyString())).thenReturn(false);
+
         bookingService.exit(USER_ID);
-        verify(bookingRepository).save(closedBooking);
+
+        verify(bookingCacheService, times(1)).exit(USER_ID);
     }
 
     @Test
     public void callingEntryWithNotRegisteredUserShouldThrowException() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID)).thenReturn(Optional.empty());
         Assertions.assertThrows(EntryNotFoundException.class, () -> bookingService.entry(USER_ID));
     }
 
     @Test
     public void callingEntryForWaitingQueueShouldThrowException() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID))
             .thenReturn(Optional.of(waitingBooking));
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(1);
@@ -69,6 +75,7 @@ public class BookingServiceTest {
 
     @Test
     public void callingEntryForAcceptedUserShouldActiveBooking() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID))
             .thenReturn(Optional.of(waitingBooking));
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(0);
@@ -77,7 +84,16 @@ public class BookingServiceTest {
     }
 
     @Test
+    public void callingEntryWithVipUser() {
+        when(vipService.isVip(anyString())).thenReturn(true);
+        bookingService.entry(USER_ID);
+        verifyNoInteractions(bookingRepository);
+        verifyNoInteractions(bookingCacheService);
+    }
+
+    @Test
     public void callingRegisterShouldSaveBooking() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID)).thenReturn(Optional.empty());
         when(bookingRepository.save(any())).thenReturn(waitingBooking);
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(7);
@@ -91,6 +107,7 @@ public class BookingServiceTest {
 
     @Test
     public void callingRegisterOnAlreadyRegisteredUserShouldNotSaveBookingAgain() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID))
             .thenReturn(Optional.of(waitingBooking));
         when(bookingRepository.save(any())).thenReturn(waitingBooking);
@@ -104,7 +121,17 @@ public class BookingServiceTest {
     }
 
     @Test
+    public void callingRegisterWithVipUser() {
+        when(vipService.isVip(anyString())).thenReturn(true);
+        RegisterResponse response = bookingService.register(USER_ID);
+        verifyNoInteractions(bookingRepository);
+        verifyNoInteractions(bookingCacheService);
+        Assertions.assertEquals(new RegisterResponse().canEnter(true).position(0), response);
+    }
+
+    @Test
     public void callingStatusShouldResponseStatusValue() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID))
             .thenReturn(Optional.of(waitingBooking));
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(7);
@@ -114,9 +141,18 @@ public class BookingServiceTest {
 
     @Test
     public void callingStatusOnNotRegisteredUserShouldThrowException() {
+        when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID))
             .thenReturn(Optional.empty());
         Assertions.assertThrows(EntryNotFoundException.class, () -> bookingService.status(USER_ID));
     }
 
+    @Test
+    public void callingStatusWithVipUser() {
+        when(vipService.isVip(anyString())).thenReturn(true);
+        StatusResponse response = bookingService.status(USER_ID);
+        verifyNoInteractions(bookingRepository);
+        verifyNoInteractions(bookingCacheService);
+        Assertions.assertEquals(new StatusResponse().position(0), response);
+    }
 }

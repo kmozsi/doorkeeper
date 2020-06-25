@@ -11,9 +11,10 @@ import org.springframework.context.annotation.Configuration;
 public class CachingConfig {
 
     public static final String POSITION_CACHE = "positions";
+    public static final String VIP_CACHE = "vips";
 
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager(POSITION_CACHE);
+        return new ConcurrentMapCacheManager(POSITION_CACHE, VIP_CACHE);
     }
 }
