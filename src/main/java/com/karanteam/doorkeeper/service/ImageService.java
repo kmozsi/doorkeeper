@@ -27,17 +27,29 @@ public class ImageService {
         OpenCV.loadShared();
     }
 
-    public byte[] processImage(boolean gray) throws IOException {
-        File officeImage = readImage("office_cut.png");
+    public byte[] processImage(boolean gray, int x, int y) throws IOException {
+        File officeFile = readImage("office_cut.png");
+        File chairFile = readImage("chair_contour_2.png");
 
-        Mat originalPicture = readFileToMat(officeImage);
-        Mat resultPicture = originalPicture.clone();
+        Mat officeMat = readFileToMat(officeFile);
+        Mat chairMat = readFileToMat(chairFile);
+
+        officeMat = insertPictureInPicture(officeMat, chairMat, x, y);
+
+        Mat resultPicture = officeMat.clone();
 
         if (gray) {
-            Imgproc.cvtColor(originalPicture, resultPicture, Imgproc.COLOR_RGB2GRAY, 0);
+            Imgproc.cvtColor(officeMat, resultPicture, Imgproc.COLOR_RGB2GRAY, 0);
         }
 
         return writeMatToImage(resultPicture);
+    }
+
+    private Mat insertPictureInPicture(Mat original, Mat insert, int x, int y) {
+        Rect rect = new Rect(x,y,insert.cols(), insert.rows());
+        Mat subMat = original.submat(rect);
+//        insert.copyTo(subMat);
+        return subMat;
     }
 
 

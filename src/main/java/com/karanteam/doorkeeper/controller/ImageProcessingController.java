@@ -22,8 +22,12 @@ public class ImageProcessingController {
         value = "/picture",
         produces = MediaType.IMAGE_PNG_VALUE
     )
-    public ResponseEntity<byte[]> printDeliveryNote(@RequestParam boolean gray) throws IOException {
-        return ResponseEntity.ok(imageService.processImage(gray));
+    public ResponseEntity<byte[]> printDeliveryNote(
+        @RequestParam(required = false, defaultValue = "false") boolean gray,
+        @RequestParam int x,
+        @RequestParam int y
+    ) throws IOException {
+        return ResponseEntity.ok(imageService.processImage(gray, x, y));
     }
 
 }
