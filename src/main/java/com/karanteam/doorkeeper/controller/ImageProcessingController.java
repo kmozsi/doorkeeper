@@ -24,8 +24,8 @@ public class ImageProcessingController {
     )
     public ResponseEntity<byte[]> printDeliveryNote(
         @RequestParam(required = false, defaultValue = "false") boolean gray,
-        @RequestParam int x,
-        @RequestParam int y
+        @RequestParam(required = false, defaultValue = "0")  int x,
+        @RequestParam(required = false, defaultValue = "0")  int y
     ) throws IOException {
         return ResponseEntity.ok(imageService.processImage(gray, x, y));
     }

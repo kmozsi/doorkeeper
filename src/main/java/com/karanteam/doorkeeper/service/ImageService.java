@@ -19,9 +19,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.opencv.core.CvType.CV_8UC1;
-import static org.opencv.core.CvType.CV_8UC3;
-
 @Service
 public class ImageService {
 
@@ -36,33 +33,6 @@ public class ImageService {
         return Office.builder().dimension(new Dimension(image.getWidth(), image.getHeight())).build();
     }
 
-    public byte[] processImageWithBufferedImage(boolean gray, int x, int y) throws IOException {
-        File officeFile = readImage("office_cut.png");
-        File chairFile = readImage("chair_contour_2.png");
-
-        BufferedImage officeImage = ImageIO.read(officeFile);
-        BufferedImage chairImage = ImageIO.read(chairFile);
-
-        WritableRaster raster = chairImage.getRaster();
-
-
-        int[] data = new int[30 * 40];
-//        data[10] = 0;
-//        data[11] = 200;
-//        data[12] = 7;
-//        data[13] = 250;
-
-
-        WritableRaster newRaster = raster.createCompatibleWritableRaster(new Rectangle(x,y,30,40));
-        newRaster.setDataElements(0, 0, new byte[10]);
-
-        officeImage.setData(newRaster);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(officeImage, "png", baos);
-        return baos.toByteArray();
-    }
-
     public byte[] processImage(boolean gray, int x, int y) throws IOException {
         File officeFile = readImage("office_cut.png");
         File chairFile = readImage("chair_contour_2.png");
@@ -70,29 +40,23 @@ public class ImageService {
         Mat officeMat = readFileToMat(officeFile);
         Mat chairMat = readFileToMat(chairFile);
 
-        officeMat = insertPictureInPicture(officeMat, chairMat, x, y);
-//        officeMat = addWeighted(officeMat, officeMat);
+        Imgproc.cvtColor(chairMat, chairMat, Imgproc.COLOR_BGRA2BGR);
+
+        insertPictureInPicture(officeMat, chairMat, x, y);
 
         Mat resultPicture = officeMat.clone();
-
         if (gray) {
             Imgproc.cvtColor(officeMat, resultPicture, Imgproc.COLOR_RGB2GRAY, 0);
         }
-
         return writeMatToImage(resultPicture);
     }
 
-    private Mat insertPictureInPicture(Mat original, Mat insert, int x, int y) {
-
-        Mat src = new Mat( 25,  50, CV_8UC3, new Scalar(200, 1, 1)); // 5x7
-
-        src.copyTo(original.rowRange(
-            y, y+src.height()
+    private void insertPictureInPicture(Mat original, Mat insert, int x, int y) {
+        insert.copyTo(original.rowRange(
+            y, y + insert.height()
         ).colRange(
-            x, x+src.width()
+            x, x + insert.width()
         ));
-
-        return original;
     }
 
     private File readImage(String imageName) throws FileNotFoundException {
