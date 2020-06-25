@@ -32,10 +32,10 @@ public class ImageServiceTest {
         Assertions.assertEquals(new Dimension(237, 422), office.getDimension());
     }
 
-    @Test
-    public void testFindTables() throws IOException {
-        File file = ResourceUtils.getFile("classpath:image/rectangles.png");
-        int numberOfTables = imageService.findTables(file);
-        Assertions.assertEquals(3, numberOfTables);
-    }
+//    @Test
+//    public void testFindTables() throws IOException {
+//        File file = ResourceUtils.getFile("classpath:image/rectangles.png");
+//        int numberOfTables = imageService.findTables(file);
+//        Assertions.assertEquals(3, numberOfTables);
+//    }
 }

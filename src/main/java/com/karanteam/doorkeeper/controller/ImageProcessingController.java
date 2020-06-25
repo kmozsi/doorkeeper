@@ -38,8 +38,10 @@ public class ImageProcessingController {
         value = "/findPositions",
         produces = MediaType.IMAGE_PNG_VALUE
     )
-    public ResponseEntity<byte[]> findPositions() throws IOException {
-        return ResponseEntity.ok(imageService.findPositions());
+    public ResponseEntity<byte[]> findPositions(
+        @RequestParam(required = false, defaultValue = "1000") int threshold
+    ) throws IOException {
+        return ResponseEntity.ok(imageService.findPositions(threshold));
     }
 
 }

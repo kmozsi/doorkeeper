@@ -4,6 +4,7 @@ import com.karanteam.doorkeeper.data.Office;
 import com.karanteam.doorkeeper.data.PositionConfiguration;
 import nu.pattern.OpenCV;
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 public class ImageService {
@@ -33,7 +35,7 @@ public class ImageService {
         return Office.builder().dimension(new Dimension(image.getWidth(), image.getHeight())).build();
     }
 
-    public byte[] findPositions() throws IOException {
+    public byte[] findPositions(int threshold) throws IOException {
         File officeFile = readImage("office_cut_2.png");
         File chairFile = readImage("chair_contour_2.png");
 
@@ -47,7 +49,7 @@ public class ImageService {
 //        int method = Imgproc.TM_SQDIFF;
 //        int method = Imgproc.TM_SQDIFF_NORMED;
 
-        Mat resultMat = positionMatching(officeMat, chairMat, method);
+        Mat resultMat = positionMatching(officeMat, chairMat, method, threshold);
         return writeMatToImage(resultMat);
     }
 
@@ -98,7 +100,7 @@ public class ImageService {
         return Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_UNCHANGED);
     }
 
-    private Mat positionMatching(Mat office, Mat position, int method) {
+    private Mat positionMatching(Mat office, Mat position, int method, int threshold) {
         Mat result = new Mat();
 
         Mat officeTransformedMat = new Mat();
@@ -107,10 +109,19 @@ public class ImageService {
         Imgproc.cvtColor(position, positionTransformedScaledMat, Imgproc.COLOR_RGB2GRAY, 0);
         Imgproc.matchTemplate(officeTransformedMat, positionTransformedScaledMat, result, method);
 
-        Core.MinMaxLocResult minMaxLocResult = Core.minMaxLoc(result);
+        Imgproc.threshold(result, result, threshold, Double.MAX_VALUE, Imgproc.THRESH_TOZERO);
 
-        Rect rect = new Rect((int)minMaxLocResult.maxLoc.x, (int)minMaxLocResult.maxLoc.y, 20, 20);
-        Imgproc.rectangle(office, rect, new Scalar(100,0,200));
+        Mat positions = new Mat();
+        Core.findNonZero(result, positions);
+
+//        IntStream.range(0, positions.)
+        IntStream.range(0, (int)positions.size().height).forEach(
+            index -> {
+                double[] coords = positions.get(index, 0);
+                Rect rect = new Rect((int)coords[0], (int)coords[1], 20, 20);
+                Imgproc.rectangle(office, rect, new Scalar(100,0,200));
+            }
+        );
 
         return office;
     }
