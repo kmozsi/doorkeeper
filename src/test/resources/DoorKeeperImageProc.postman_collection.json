@@ -1,0 +1,55 @@
+{
+	"info": {
+		"_postman_id": "f160ecee-44cf-4d37-a5a6-9e16bcd3c81f",
+		"name": "DoorKeeperImageProc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CREATE_SAMPLE",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"positions\": [\n        {\n            \"x\": 47,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/setPositions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"setPositions"
+					],
+					"query": [
+						{
+							"key": "gray",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "x",
+							"value": "100",
+							"disabled": true
+						},
+						{
+							"key": "y",
+							"value": "10",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

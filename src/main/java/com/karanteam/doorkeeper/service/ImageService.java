@@ -1,6 +1,7 @@
 package com.karanteam.doorkeeper.service;
 
 import com.karanteam.doorkeeper.data.Office;
+import com.karanteam.doorkeeper.data.PositionConfiguration;
 import nu.pattern.OpenCV;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -11,7 +12,6 @@ import org.springframework.util.ResourceUtils;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.*;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,7 +33,25 @@ public class ImageService {
         return Office.builder().dimension(new Dimension(image.getWidth(), image.getHeight())).build();
     }
 
-    public byte[] processImage(boolean gray, int x, int y) throws IOException {
+    public byte[] findPositions() throws IOException {
+        File officeFile = readImage("office_cut_2.png");
+        File chairFile = readImage("chair_contour_2.png");
+
+        Mat officeMat = readFileToMat(officeFile);
+        Mat chairMat = readFileToMat(chairFile);
+
+        int method = Imgproc.TM_CCOEFF;
+//        int method = Imgproc.TM_CCOEFF_NORMED;
+//        int method = Imgproc.TM_CCORR;
+//        int method = Imgproc.TM_CCORR_NORMED;
+//        int method = Imgproc.TM_SQDIFF;
+//        int method = Imgproc.TM_SQDIFF_NORMED;
+
+        Mat resultMat = positionMatching(officeMat, chairMat, method);
+        return writeMatToImage(resultMat);
+    }
+
+    public byte[] processImage(boolean gray, PositionConfiguration configuration) throws IOException {
         File officeFile = readImage("office_cut.png");
         File chairFile = readImage("chair_contour_2.png");
 
@@ -42,7 +60,8 @@ public class ImageService {
 
         Imgproc.cvtColor(chairMat, chairMat, Imgproc.COLOR_BGRA2BGR);
 
-        insertPictureInPicture(officeMat, chairMat, x, y);
+        configuration.getPositions()
+            .forEach(position -> insertPictureInPicture(officeMat, chairMat, position.getX(), position.getY()));
 
         Mat resultPicture = officeMat.clone();
         if (gray) {
@@ -69,14 +88,6 @@ public class ImageService {
         return outputBytes.toArray();
     }
 
-
-    public byte[] transform(File imageFile) throws IOException {
-//        Imgproc.blur(originalPicture, blurredImage, new Size(7, 7));
-//        Imgproc.cvtColor(blurredImage, hsvImage, Imgproc.COLOR_BGR2HSV);
-//        Imgproc.cvtColor(originalPicture, grayPicture, Imgproc.COLOR_RGB2GRAY, 0);
-        return null;
-    }
-
     public Office scanOfficeWithOpenCV(File imageFile) throws IOException {
         Mat mat = readFileToMat(imageFile);
         return Office.builder().dimension(new Dimension(mat.width(), mat.height())).build();
@@ -87,62 +98,21 @@ public class ImageService {
         return Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_UNCHANGED);
     }
 
-    public int findTables(File imageFile) throws IOException {
-        Mat originalPicture = readFileToMat(imageFile);
+    private Mat positionMatching(Mat office, Mat position, int method) {
+        Mat result = new Mat();
 
-        Mat blurredImage = new Mat();
-        Mat hsvImage = new Mat();
-        Mat mask = new Mat();
-        Mat morphOutput = new Mat();
+        Mat officeTransformedMat = new Mat();
+        Mat positionTransformedScaledMat = new Mat();
+        Imgproc.cvtColor(office, officeTransformedMat, Imgproc.COLOR_RGB2GRAY, 0);
+        Imgproc.cvtColor(position, positionTransformedScaledMat, Imgproc.COLOR_RGB2GRAY, 0);
+        Imgproc.matchTemplate(officeTransformedMat, positionTransformedScaledMat, result, method);
 
-// remove some noise
-        Imgproc.blur(originalPicture, blurredImage, new Size(7, 7));
-// convert the frame to HSV
-        Imgproc.cvtColor(blurredImage, hsvImage, Imgproc.COLOR_BGR2HSV);
+        Core.MinMaxLocResult minMaxLocResult = Core.minMaxLoc(result);
 
+        Rect rect = new Rect((int)minMaxLocResult.maxLoc.x, (int)minMaxLocResult.maxLoc.y, 20, 20);
+        Imgproc.rectangle(office, rect, new Scalar(100,0,200));
 
-
-
-        // get thresholding values from the UI
-// remember: H ranges 0-180, S and V range 0-255
-        double hueStart = 10.0;
-        double saturationStart = 10.0;
-        double valueStart = 10.0;
-        double hueStop = 100.0;
-        double saturationStop = 200.0;
-        double valueStop = 200.0;
-        Scalar minValues = new Scalar(hueStart, saturationStart, valueStart);
-        Scalar maxValues = new Scalar(hueStop, saturationStop, valueStop);
-
-// show the current selected HSV range
-        String valuesToPrint = "Hue range: " + minValues.val[0] + "-" + maxValues.val[0]
-            + "\tSaturation range: " + minValues.val[1] + "-" + maxValues.val[1] + "\tValue range: "
-            + minValues.val[2] + "-" + maxValues.val[2];
-//        this.onFXThread(this.hsvValuesProp, valuesToPrint);
-
-// threshold HSV image to select tennis balls
-        Core.inRange(hsvImage, minValues, maxValues, mask);
-// show the partial output
-//        this.onFXThread(maskProp, this.mat2Image(mask));
-
-
-
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-
-        Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        if (hierarchy.size().height > 0 && hierarchy.size().width > 0)
-        {
-            // for each contour, display it in blue
-            for (int idx = 0; idx >= 0; idx = (int) hierarchy.get(0, idx)[0])
-            {
-//                Imgproc.drawContours(frame, contours, idx, new Scalar(250, 0, 0));
-            }
-        }
-
-
-        return 0;
+        return office;
     }
 }
 
