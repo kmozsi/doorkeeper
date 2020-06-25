@@ -4,7 +4,6 @@ import com.karanteam.doorkeeper.data.Office;
 import com.karanteam.doorkeeper.data.PositionConfiguration;
 import nu.pattern.OpenCV;
 import org.opencv.core.*;
-import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
@@ -41,9 +38,6 @@ public class ImageService {
         Mat originalMat = officeMat.clone();
 
         Mat preparedMat = prepareImage(officeMat, gray, filtered, threshold, maxValue, threshMethod);
-
-
-
 
         File chairFile = readImage("chair_binary.png");
         Mat chairMat = readFileToMat(chairFile);
@@ -71,8 +65,6 @@ public class ImageService {
                 Imgproc.rectangle(originalMat, rect, new Scalar(100,0,200));
             }
         );
-
-
 
 //        Mat resultMat = positionMatching(preparedMat, chairMat, method, matchingThreshold);
         return writeMatToImage(originalMat);
@@ -109,16 +101,6 @@ public class ImageService {
 
         configuration.getPositions()
             .forEach(position -> insertPictureInPicture(officeMat, chairMat, position.getX(), position.getY()));
-
-
-//        public static final int THRESH_BINARY = 0;
-//        public static final int THRESH_BINARY_INV = 1;
-//        public static final int THRESH_TRUNC = 2;
-//        public static final int THRESH_TOZERO = 3;
-//        public static final int THRESH_TOZERO_INV = 4;
-//        public static final int THRESH_MASK = 7;
-//        public static final int THRESH_OTSU = 8;
-//        public static final int THRESH_TRIANGLE = 16;
 
         if (gray) {
             Imgproc.cvtColor(officeMat, officeMat, Imgproc.COLOR_RGB2GRAY, 0);

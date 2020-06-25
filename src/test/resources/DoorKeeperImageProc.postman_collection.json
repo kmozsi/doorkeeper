@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"positions\": [\n        {\n            \"x\": 47,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        }\n    ]\n}",
+					"raw": "{\n    \"positions\": [\n        {\n            \"x\": 47,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n\n\n        {\n            \"x\": 47,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n\n\n        {\n            \"x\": 47,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 47,\n            \"y\": 268,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 268,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 268,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 47,\n            \"y\": 320,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 320,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 320,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 47,\n            \"y\": 370,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 370,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 370,\n            \"orientation\": \"EAST\"\n        },\n\n\n\n\n\n        {\n            \"x\": 148,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 167,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 186,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 205,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n\n\n        {\n            \"x\": 148,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 167,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 186,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 205,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,7 +20,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/setPositions",
+					"raw": "http://localhost:8080/setPositions?filtered=true&threshMethod=0&threshold=216&maxValue=1000&gray=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -31,19 +31,77 @@
 					],
 					"query": [
 						{
+							"key": "filtered",
+							"value": "true"
+						},
+						{
+							"key": "threshMethod",
+							"value": "0"
+						},
+						{
+							"key": "threshold",
+							"value": "216"
+						},
+						{
+							"key": "maxValue",
+							"value": "1000"
+						},
+						{
 							"key": "gray",
-							"value": "true",
-							"disabled": true
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FIND_POSITIONS",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"positions\": [\n        {\n            \"x\": 47,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 48,\n            \"orientation\": \"EAST\"\n        },\n\n\n        {\n            \"x\": 47,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n\n\n        {\n            \"x\": 47,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 47,\n            \"y\": 268,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 268,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 268,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 47,\n            \"y\": 320,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 320,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 320,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 47,\n            \"y\": 370,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 66,\n            \"y\": 370,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 85,\n            \"y\": 370,\n            \"orientation\": \"EAST\"\n        },\n\n\n\n\n\n        {\n            \"x\": 148,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 167,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 186,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 205,\n            \"y\": 97,\n            \"orientation\": \"EAST\"\n        },\n\n\n        {\n            \"x\": 148,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 167,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 186,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        },\n        {\n            \"x\": 205,\n            \"y\": 146,\n            \"orientation\": \"EAST\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/findPositions?filtered=true&threshMethod=0&threshold=216&maxValue=1000&gray=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"findPositions"
+					],
+					"query": [
+						{
+							"key": "filtered",
+							"value": "true"
 						},
 						{
-							"key": "x",
-							"value": "100",
-							"disabled": true
+							"key": "threshMethod",
+							"value": "0"
 						},
 						{
-							"key": "y",
-							"value": "10",
-							"disabled": true
+							"key": "threshold",
+							"value": "216"
+						},
+						{
+							"key": "maxValue",
+							"value": "1000"
+						},
+						{
+							"key": "gray",
+							"value": "true"
 						}
 					]
 				}
