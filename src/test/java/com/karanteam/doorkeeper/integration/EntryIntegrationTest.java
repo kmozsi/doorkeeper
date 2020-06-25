@@ -272,7 +272,7 @@ public class EntryIntegrationTest {
     }
 
     private void thereIsTwoPlaceForToday() {
-        officeCapacityRepository.save(OfficeCapacity.of(1, 10, 20));
+        officeCapacityRepository.save(OfficeCapacity.of(1, 10, 20, 5));
     }
 
     private void thereAreTwoEmployeeInTheBuilding() {

@@ -16,20 +16,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookingCacheService {
 
-    private final OfficeCapacityService officeCapacityService;
+    private final AdminService adminService;
     private final BookingRepository bookingRepository;
 
     public BookingCacheService(
-        OfficeCapacityService officeCapacityService,
+        AdminService adminService,
         BookingRepository bookingRepository
     ) {
-        this.officeCapacityService = officeCapacityService;
+        this.adminService = adminService;
         this.bookingRepository = bookingRepository;
     }
 
     @Cacheable(value = CachingConfig.POSITION_CACHE)
     public int calculatePositionFromOrdinal(int ordinal) {
-        return Math.max(ordinal - officeCapacityService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1, 0);
+        return Math.max(ordinal - adminService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1, 0);
     }
 
     private int getFirstOrdinal() {

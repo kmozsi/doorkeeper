@@ -31,7 +31,7 @@ public class BookingCacheServiceTest {
     private BookingRepository bookingRepository;
 
     @MockBean
-    private OfficeCapacityService officeCapacityService;
+    private AdminService adminService;
 
     private static final Booking activeBooking = Booking.builder()
         .userId(USER_ID).ordinal(1).entered(true).build();
@@ -52,7 +52,7 @@ public class BookingCacheServiceTest {
         int capacity = 10;
         int ordinal = 12;
 
-        when(officeCapacityService.getActualDailyCapacity()).thenReturn(capacity);
+        when(adminService.getActualDailyCapacity()).thenReturn(capacity);
         when(bookingRepository.findTopByOrderByOrdinalAsc())
             .thenReturn(Booking.builder().ordinal(1).build());
         when(bookingRepository.countAllByExitedAndOrdinalLessThan(true, ordinal))
@@ -62,7 +62,7 @@ public class BookingCacheServiceTest {
         bookingCacheService.calculatePositionFromOrdinal(ordinal);
         bookingCacheService.calculatePositionFromOrdinal(ordinal);
 
-        verify(officeCapacityService, times(1)).getActualDailyCapacity();
+        verify(adminService, times(1)).getActualDailyCapacity();
         verify(bookingRepository, times(1)).findTopByOrderByOrdinalAsc();
         verify(bookingRepository, times(1)).countAllByExitedAndOrdinalLessThan(true, ordinal);
     }
@@ -75,7 +75,7 @@ public class BookingCacheServiceTest {
         int capacity = 10;
         int ordinal = 12;
 
-        when(officeCapacityService.getActualDailyCapacity()).thenReturn(capacity);
+        when(adminService.getActualDailyCapacity()).thenReturn(capacity);
         when(bookingRepository.findTopByOrderByOrdinalAsc())
             .thenReturn(Booking.builder().ordinal(1).build());
         when(bookingRepository.countAllByExitedAndOrdinalLessThan(true, ordinal))
@@ -92,7 +92,7 @@ public class BookingCacheServiceTest {
         int capacity = 10;
         int ordinal = 12;
 
-        when(officeCapacityService.getActualDailyCapacity()).thenReturn(capacity);
+        when(adminService.getActualDailyCapacity()).thenReturn(capacity);
         when(bookingRepository.findTopByOrderByOrdinalAsc())
             .thenReturn(Booking.builder().ordinal(1).build());
         when(bookingRepository.countAllByExitedAndOrdinalLessThan(true, ordinal))
@@ -109,7 +109,7 @@ public class BookingCacheServiceTest {
         int capacity = 10;
         int ordinal = 12;
 
-        when(officeCapacityService.getActualDailyCapacity()).thenReturn(capacity);
+        when(adminService.getActualDailyCapacity()).thenReturn(capacity);
         when(bookingRepository.findTopByOrderByOrdinalAsc())
             .thenReturn(Booking.builder().ordinal(1).build());
         when(bookingRepository.countAllByExitedAndOrdinalLessThan(true, ordinal))
