@@ -177,6 +177,110 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /vip:
+    get:
+      summary: List VIP users
+      operationId: getVips
+      tags:
+        - vip
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User added as VIP
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VipUsers"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Add VIP user
+      operationId: addVip
+      tags:
+        - vip
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Contains VIP user's identifier
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VipUser'
+      responses:
+        '201':
+          description: User added as VIP
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /vip/{userId}:
+    delete:
+      summary: Remove VIP user
+      operationId: deleteVip
+      tags:
+        - vip
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: userId
+          description: VIP user's identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User removed from VIP users
+        '404':
+          description: User not found with given id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     RegisterResponse:
@@ -206,6 +310,22 @@ components:
         percentage:
           type: integer
           format: int32
+    VipUsers:
+      required:
+        - vipUsers
+      type: object
+      properties:
+        vipUsers:
+          type: array
+          items:
+            type: string
+    VipUser:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
     Error:
       type: object
       required:

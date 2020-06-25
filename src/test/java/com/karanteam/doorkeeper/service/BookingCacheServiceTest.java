@@ -1,23 +1,20 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.config.CachingConfig;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.karanteam.doorkeeper.entity.Booking;
-import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openapitools.model.RegisterResponse;
-import org.openapitools.model.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cache.annotation.Cacheable;
-
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class BookingCacheServiceTest {
@@ -38,6 +35,8 @@ public class BookingCacheServiceTest {
 
     private static final Booking activeBooking = Booking.builder()
         .userId(USER_ID).ordinal(1).entered(true).build();
+    private static final Booking closedBooking = Booking.builder()
+        .userId(USER_ID).ordinal(1).entered(true).exited(true).build();
 
     private void evictCache() {
         when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
@@ -119,5 +118,19 @@ public class BookingCacheServiceTest {
         Assertions.assertEquals(0, bookingCacheService.calculatePositionFromOrdinal(ordinal));
     }
 
+    @Test
+    public void callingExitWithUserNotInBuildingShouldThrowException() {
+        when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
+            .thenReturn(Optional.empty());
+        Assertions.assertThrows(EntryNotFoundException.class, () -> bookingService.exit(USER_ID));
+    }
+
+    @Test
+    public void callingExitShouldCloseBooking() {
+        when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
+            .thenReturn(Optional.of(activeBooking));
+        bookingService.exit(USER_ID);
+        verify(bookingRepository).save(closedBooking);
+    }
 
 }
