@@ -6,9 +6,12 @@
 	},
 	"item": [
 		{
-			"name": "CREATE_SAMPLE",
+			"name": "PREPARATION",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -20,35 +23,40 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/setPositions?filtered=true&threshMethod=0&threshold=216&maxValue=1000&gray=true",
+					"raw": "http://localhost:8080/preparation",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"setPositions"
+						"preparation"
 					],
 					"query": [
 						{
 							"key": "filtered",
-							"value": "true"
+							"value": "true",
+							"disabled": true
 						},
 						{
 							"key": "threshMethod",
-							"value": "0"
+							"value": "0",
+							"disabled": true
 						},
 						{
 							"key": "threshold",
-							"value": "216"
+							"value": "216",
+							"disabled": true
 						},
 						{
 							"key": "maxValue",
-							"value": "1000"
+							"value": "1000",
+							"disabled": true
 						},
 						{
 							"key": "gray",
-							"value": "true"
+							"value": "true",
+							"disabled": true
 						}
 					]
 				}
@@ -73,7 +81,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/findPositions?filtered=true&threshMethod=0&threshold=216&maxValue=1000&gray=true",
+					"raw": "http://localhost:8080/findPositions",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -85,23 +93,33 @@
 					"query": [
 						{
 							"key": "filtered",
-							"value": "true"
+							"value": "true",
+							"disabled": true
 						},
 						{
 							"key": "threshMethod",
-							"value": "0"
+							"value": "0",
+							"disabled": true
 						},
 						{
 							"key": "threshold",
-							"value": "216"
+							"value": "216",
+							"disabled": true
 						},
 						{
 							"key": "maxValue",
-							"value": "1000"
+							"value": "1000",
+							"disabled": true
 						},
 						{
 							"key": "gray",
-							"value": "true"
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "matchingThreshold",
+							"value": "4000000",
+							"disabled": true
 						}
 					]
 				}
