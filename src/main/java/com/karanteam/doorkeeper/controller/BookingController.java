@@ -3,10 +3,8 @@ package com.karanteam.doorkeeper.controller;
 import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.enumeration.Role;
 import com.karanteam.doorkeeper.service.JwtService;
-import com.karanteam.doorkeeper.service.OfficeCapacityService;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.DoorApi;
-import org.openapitools.model.CapacityBody;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-public class Controller implements DoorApi {
+public class BookingController implements DoorApi {
 
     private final BookingService bookingService;
-    private final OfficeCapacityService capacityService;
     private final JwtService jwtService;
 
-    public Controller(BookingService bookingService, OfficeCapacityService capacityService, JwtService jwtService) {
+    public BookingController(BookingService bookingService, JwtService jwtService) {
         this.bookingService = bookingService;
-        this.capacityService = capacityService;
         this.jwtService = jwtService;
     }
 
@@ -77,21 +73,5 @@ public class Controller implements DoorApi {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE);
         log.info("Received register call with userId: " + userId);
         return ResponseEntity.ok(bookingService.register(userId));
-    }
-
-    /**
-     * Rest endpoint to set the current capacity of the office.
-     * The daily capacity of the office is: capacity * percentage / 100.
-     * Only users with @{@link Role#HR} can set these values.
-     * @param xToken JWT token with the user's identifier. (required)
-     * @param capacityBody Contains the full capacity and the allowed percentage. (required)
-     * @return @RegisterResponse
-     */
-    @Override
-    public ResponseEntity<Void> setCapacity(String xToken, CapacityBody capacityBody) {
-        String userId = jwtService.parseToken(xToken, Role.EMPLOYEE, Role.HR);
-        log.info("Received set capacity call with userId: " + userId);
-        capacityService.setCapacity(capacityBody);
-        return ResponseEntity.ok().build();
     }
 }

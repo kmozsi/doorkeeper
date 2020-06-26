@@ -1,7 +1,12 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.repository.BookingRepository;
+import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
+
 import com.karanteam.doorkeeper.config.CachingConfig;
+import com.karanteam.doorkeeper.entity.Booking;
+import com.karanteam.doorkeeper.exception.EntryNotFoundException;
+import com.karanteam.doorkeeper.repository.BookingRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -11,20 +16,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookingCacheService {
 
-    private final OfficeCapacityService officeCapacityService;
+    private final AdminService adminService;
     private final BookingRepository bookingRepository;
 
     public BookingCacheService(
-        OfficeCapacityService officeCapacityService,
+        AdminService adminService,
         BookingRepository bookingRepository
     ) {
-        this.officeCapacityService = officeCapacityService;
+        this.adminService = adminService;
         this.bookingRepository = bookingRepository;
     }
 
     @Cacheable(value = CachingConfig.POSITION_CACHE)
     public int calculatePositionFromOrdinal(int ordinal) {
-        return Math.max(ordinal - officeCapacityService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1, 0);
+        return Math.max(ordinal - adminService.getActualDailyCapacity() - countExitedBefore(ordinal) - getFirstOrdinal() + 1, 0);
     }
 
     private int getFirstOrdinal() {
@@ -33,6 +38,18 @@ public class BookingCacheService {
 
     private int countExitedBefore(int ordinal) {
         return bookingRepository.countAllByExitedAndOrdinalLessThan(true, ordinal);
+    }
+
+    @CacheEvict(value = POSITION_CACHE, allEntries = true)
+    public void exit(String userId) {
+        Booking userInBuilding = getActiveBooking(userId);
+        userInBuilding.setExited(true);
+        bookingRepository.save(userInBuilding);
+    }
+
+    private Booking getActiveBooking(String userId) {
+        return bookingRepository.findByExitedAndEnteredAndUserId(false, true, userId)
+            .orElseThrow(EntryNotFoundException::new);
     }
 
 }
