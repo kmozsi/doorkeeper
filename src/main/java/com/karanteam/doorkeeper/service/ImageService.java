@@ -1,5 +1,6 @@
 package com.karanteam.doorkeeper.service;
 
+import com.karanteam.doorkeeper.data.OfficePosition;
 import lombok.extern.slf4j.Slf4j;
 import nu.pattern.OpenCV;
 import org.opencv.core.*;
@@ -11,7 +12,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.EAST;
 
 @Service
 @Slf4j
@@ -21,6 +26,23 @@ public class ImageService {
 
     public ImageService() {
         OpenCV.loadShared();
+    }
+
+    public int storePosition(byte[] bytes) throws IOException {
+        Mat uploadedMat = Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_UNCHANGED);
+        File chairFile = readImage("chair_binary.png");
+        Mat chairMat = readFileToMat(chairFile);
+
+        Mat preparedOffice = prepareImage(uploadedMat, true, true, 216, 1000, 0);
+        Mat preparedChair = prepareImage(chairMat, true, true, 216, 1000, 0);
+
+        Mat positions = findPositions(preparedOffice, preparedChair, 4000000);
+
+        List<OfficePosition> officePositions = readPositions(positions);
+
+        // TODO persist office positions
+
+        return officePositions.size();
     }
 
     public byte[] findPositions(boolean gray, boolean filtered, int threshold, int maxValue, int threshMethod, int matchingThreshold) throws IOException {
@@ -50,6 +72,17 @@ public class ImageService {
         Mat positions = new Mat();
         Core.findNonZero(matchingMat, positions);
         return positions;
+    }
+
+    private List<OfficePosition> readPositions(Mat positions) {
+        return IntStream.range(0, (int)positions.size().height).mapToObj(
+            index -> {
+                double[] coords = positions.get(index, 0);
+                int x = (int)coords[0];
+                int y = (int)coords[1];
+                return OfficePosition.builder().x(x).y(y).orientation(EAST).build();
+            }
+        ).collect(Collectors.toList());
     }
 
     private void drawFoundPositions(Mat originalMat, Mat positions) {

@@ -125,6 +125,46 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "UPLOAD_OFFICE_MAP",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"contentType": "",
+							"type": "file",
+							"src": "/home/gincsait/Dokumentumok/doorkeeper/pictures/original.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/uploadOfficeMap",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"uploadOfficeMap"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
