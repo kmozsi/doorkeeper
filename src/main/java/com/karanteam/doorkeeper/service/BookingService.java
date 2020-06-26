@@ -1,13 +1,16 @@
 package com.karanteam.doorkeeper.service;
 
+import com.karanteam.doorkeeper.config.MessagingConfig;
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
+import com.karanteam.doorkeeper.messaging.MessageProducer;
 import com.karanteam.doorkeeper.repository.BookingRepository;
-import java.util.Optional;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * Service for office booking functions.
@@ -18,20 +21,35 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookingCacheService bookingCacheService;
     private final VipService vipService;
+    private final MessagingConfig messagingConfig;
+    private final MessageProducer messageProducer;
 
     public BookingService(
         BookingRepository bookingRepository,
         BookingCacheService bookingCacheService,
-        VipService vipService) {
+        VipService vipService,
+        MessagingConfig messagingConfig,
+        MessageProducer messageProducer) {
         this.bookingRepository = bookingRepository;
         this.bookingCacheService = bookingCacheService;
         this.vipService = vipService;
+        this.messagingConfig = messagingConfig;
+        this.messageProducer = messageProducer;
     }
 
     public void exit(String userId) {
         if (!vipService.isVip(userId)) {
+            notifyCanEnterSoon();
             bookingCacheService.exit(userId);
         }
+    }
+
+    private void notifyCanEnterSoon() {
+        bookingRepository.findAll().stream().filter(booking ->
+            bookingCacheService.calculatePositionFromOrdinal(booking.getOrdinal()) == messagingConfig.getNotifyPosition() + 1
+        ).findFirst().ifPresent(booking ->
+            messageProducer.sendMessage(booking.getUserId())
+        );
     }
 
     public void entry(String userId) {
