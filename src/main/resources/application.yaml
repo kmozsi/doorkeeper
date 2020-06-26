@@ -12,3 +12,8 @@ application:
   initialCapacity: 250
   initialPercentage: 10
   initialMinDistance: 5
+messaging:
+  topic: entry-notification
+  serverLocation: localhost:9092
+  clientId: doorkeeper
+  notifyPosition: 3
