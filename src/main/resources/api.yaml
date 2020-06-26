@@ -280,6 +280,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /positions:
+    post:
+      summary: Set positions by uploading map
+      operationId: setPositions
+      tags:
+        - office
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                officeMap:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Done
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PositionsResponse"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     RegisterResponse:
@@ -332,6 +372,13 @@ components:
       properties:
         userId:
           type: string
+    PositionsResponse:
+      type: object
+      required:
+        - numberOfPositions
+      properties:
+        message:
+          type: number
     Error:
       type: object
       required:

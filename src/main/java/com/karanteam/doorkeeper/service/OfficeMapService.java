@@ -1,6 +1,7 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.data.OfficePosition;
+import com.karanteam.doorkeeper.entity.OfficePosition;
+import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import lombok.extern.slf4j.Slf4j;
 import nu.pattern.OpenCV;
 import org.opencv.core.*;
@@ -15,20 +16,22 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.EAST;
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
 
 @Service
 @Slf4j
-public class ImageService {
+public class OfficeMapService {
 
     private static final String BASE_PATH = "classpath:image/";
 
-    public ImageService() {
+    private final OfficePositionService officePositionService;
+
+    public OfficeMapService(OfficePositionService officePositionService) {
+        this.officePositionService = officePositionService;
         OpenCV.loadShared();
     }
 
-    public int storePosition(byte[] bytes) throws IOException {
+    public int storePositions(byte[] bytes) throws IOException {
         Mat uploadedMat = Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_UNCHANGED);
         File chairFile = readImage("chair_binary.png");
         Mat chairMat = readFileToMat(chairFile);
@@ -38,9 +41,9 @@ public class ImageService {
 
         Mat positions = findPositions(preparedOffice, preparedChair, 4000000);
 
-        List<OfficePosition> officePositions = readPositions(positions);
+        List<OfficePosition> officePositions = readPositions(positions, NORTH);
 
-        // TODO persist office positions
+        officePositionService.setPositions(officePositions);
 
         return officePositions.size();
     }
@@ -74,13 +77,13 @@ public class ImageService {
         return positions;
     }
 
-    private List<OfficePosition> readPositions(Mat positions) {
+    private List<OfficePosition> readPositions(Mat positions, OfficePositionOrientation officePositionOrientation) {
         return IntStream.range(0, (int)positions.size().height).mapToObj(
             index -> {
                 double[] coords = positions.get(index, 0);
                 int x = (int)coords[0];
                 int y = (int)coords[1];
-                return OfficePosition.builder().x(x).y(y).orientation(EAST).build();
+                return OfficePosition.builder().x(x).y(y).orientation(officePositionOrientation).build();
             }
         ).collect(Collectors.toList());
     }

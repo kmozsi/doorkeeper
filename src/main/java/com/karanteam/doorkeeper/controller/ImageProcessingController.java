@@ -1,24 +1,21 @@
 package com.karanteam.doorkeeper.controller;
 
-import com.karanteam.doorkeeper.service.ImageService;
+import com.karanteam.doorkeeper.service.OfficeMapService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @Controller
 public class ImageProcessingController {
 
-    private final ImageService imageService;
+    private final OfficeMapService officeMapService;
 
-    public ImageProcessingController(ImageService imageService) {
-        this.imageService = imageService;
+    public ImageProcessingController(OfficeMapService officeMapService) {
+        this.officeMapService = officeMapService;
     }
 
 //        public static final int THRESH_BINARY = 0;
@@ -41,7 +38,7 @@ public class ImageProcessingController {
         @RequestParam(required = false, defaultValue = "1000")  int maxValue,
         @RequestParam(required = false, defaultValue = "0")  int threshMethod
         ) throws IOException {
-        return ResponseEntity.ok(imageService.createPreparedImage(gray, filtered, threshold, maxValue, threshMethod));
+        return ResponseEntity.ok(officeMapService.createPreparedImage(gray, filtered, threshold, maxValue, threshMethod));
     }
 
     @GetMapping(
@@ -56,12 +53,12 @@ public class ImageProcessingController {
         @RequestParam(required = false, defaultValue = "0")  int threshMethod,
         @RequestParam(required = false, defaultValue = "4000000")  int matchingThreshold
     ) throws IOException {
-        return ResponseEntity.ok(imageService.findPositions(gray, filtered, threshold, maxValue, threshMethod, matchingThreshold));
+        return ResponseEntity.ok(officeMapService.findPositions(gray, filtered, threshold, maxValue, threshMethod, matchingThreshold));
     }
 
-    @PostMapping(value = "/uploadOfficeMap")
-    public ResponseEntity<Integer> uploadOfficeMap(@RequestParam("file") MultipartFile file, ModelMap modelMap) throws IOException {
-        modelMap.addAttribute("file", file);
-        return ResponseEntity.ok(imageService.storePosition(file.getBytes()));
-    }
+//    @PostMapping(value = "/uploadOfficeMap")
+//    public ResponseEntity<Integer> uploadOfficeMap(@RequestParam("file") MultipartFile file, ModelMap modelMap) throws IOException {
+//        modelMap.addAttribute("file", file);
+//        return ResponseEntity.ok(imageService.storePosition(file.getBytes()));
+//    }
 }
