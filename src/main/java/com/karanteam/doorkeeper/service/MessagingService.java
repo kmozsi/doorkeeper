@@ -1,4 +1,4 @@
-package com.karanteam.doorkeeper.messaging;
+package com.karanteam.doorkeeper.service;
 
 import com.karanteam.doorkeeper.config.MessagingConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class MessageProducer {
+public class MessagingService {
 
     private final Producer<Long, String> producer;
     private final MessagingConfig messagingConfig;
 
-    public MessageProducer(Producer<Long, String> producer, MessagingConfig messagingConfig) {
+    public MessagingService(Producer<Long, String> producer, MessagingConfig messagingConfig) {
         this.producer = producer;
         this.messagingConfig = messagingConfig;
     }
