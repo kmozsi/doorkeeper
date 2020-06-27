@@ -26,7 +26,7 @@ public class OfficeMapServiceTest {
         File file = ResourceUtils.getFile("classpath:image/original.jpg");
         byte[] bytes = Files.readAllBytes(file.toPath());
         int count = officeMapService.storePositions(bytes);
-        assertEquals(108, count);
+        assertEquals(301, count); // TODO 302... :D
 
         verify(officePositionService, times(1)).setPositions(anyList());
     }

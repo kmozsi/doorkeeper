@@ -18,13 +18,14 @@ public class BookingCacheService {
 
     private final AdminService adminService;
     private final BookingRepository bookingRepository;
+    private final OfficePositionService officePositionService;
 
-    public BookingCacheService(
-        AdminService adminService,
-        BookingRepository bookingRepository
-    ) {
+    public BookingCacheService(AdminService adminService,
+        BookingRepository bookingRepository,
+        OfficePositionService officePositionService) {
         this.adminService = adminService;
         this.bookingRepository = bookingRepository;
+        this.officePositionService = officePositionService;
     }
 
     @Cacheable(value = CachingConfig.POSITION_CACHE)
@@ -45,6 +46,7 @@ public class BookingCacheService {
         Booking userInBuilding = getActiveBooking(userId);
         userInBuilding.setExited(true);
         bookingRepository.save(userInBuilding);
+        officePositionService.exit(userInBuilding.getOfficePosition().getId());
     }
 
     private Booking getActiveBooking(String userId) {

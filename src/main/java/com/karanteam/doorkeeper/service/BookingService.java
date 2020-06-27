@@ -2,12 +2,16 @@ package com.karanteam.doorkeeper.service;
 
 import com.karanteam.doorkeeper.config.MessagingConfig;
 import com.karanteam.doorkeeper.entity.Booking;
+import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
+import java.net.URI;
+import java.util.Optional;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Optional;
 
@@ -22,16 +26,19 @@ public class BookingService {
     private final VipService vipService;
     private final MessagingConfig messagingConfig;
     private final MessagingService messagingService;
+    private final OfficePositionService officePositionService;
 
     public BookingService(
         BookingRepository bookingRepository,
         BookingCacheService bookingCacheService,
         VipService vipService,
+        OfficePositionService officePositionService,
         MessagingConfig messagingConfig,
         MessagingService messagingService) {
         this.bookingRepository = bookingRepository;
         this.bookingCacheService = bookingCacheService;
         this.vipService = vipService;
+        this.officePositionService = officePositionService;
         this.messagingConfig = messagingConfig;
         this.messagingService = messagingService;
     }
@@ -59,6 +66,7 @@ public class BookingService {
             }
             waitingBooking.setEntered(true);
             bookingRepository.save(waitingBooking);
+            officePositionService.enter(waitingBooking.getOfficePosition().getId());
         }
     }
 
@@ -68,15 +76,18 @@ public class BookingService {
 
     public RegisterResponse register(String userId) {
         if (vipService.isVip(userId)) {
-            return createRegisterResponse(0);
+            return createRegisterResponse(0, null);
         }
         Optional<Booking> alreadyWaitingUser = findWaitingBooking(userId);
         if (alreadyWaitingUser.isPresent()) {
-            return createRegisterResponse(calculatePosition(alreadyWaitingUser.get()));
+            String uri = getURIForPosition(alreadyWaitingUser.get().getOfficePosition());
+            return createRegisterResponse(calculatePosition(alreadyWaitingUser.get()), uri);
         }
 
-        Booking booking = bookingRepository.save(Booking.builder().userId(userId).build());
-        return createRegisterResponse(calculatePosition(booking));
+        OfficePosition officePosition = officePositionService.getNextFreePosition();
+        Booking booking = bookingRepository.save(Booking.builder().userId(userId).officePosition(officePosition).build());
+        String uri = getURIForPosition(officePosition);
+        return createRegisterResponse(calculatePosition(booking), uri);
     }
 
     public void cleanupBookings() {
@@ -88,8 +99,8 @@ public class BookingService {
         );
     }
 
-    private RegisterResponse createRegisterResponse(int position) {
-        return new RegisterResponse().canEnter(position <= 0).position(position);
+    private RegisterResponse createRegisterResponse(int position, String uri) {
+        return new RegisterResponse().canEnter(position <= 0).position(position).positionPicture(uri);
     }
 
     /**
@@ -99,12 +110,14 @@ public class BookingService {
      * @return @StatusResponse
      */
     public StatusResponse status(String userId) {
-        return new StatusResponse().position(
+        Booking booking = getWaitingBooking(userId);
+        String uri = getURIForPosition(booking.getOfficePosition());
+        return new StatusResponse().positionPicture(uri).position(
             vipService.isVip(userId) ? 0 : calculatePosition(getWaitingBooking(userId))
         );
     }
 
-    private int calculatePosition(Booking user) {
+    private int calculatePosition(Booking user) { // TODO how do we handle when there is no free space by the office map? :/
         return bookingCacheService.calculatePositionFromOrdinal(user.getOrdinal());
     }
 
@@ -114,5 +127,14 @@ public class BookingService {
 
     private Optional<Booking> findWaitingBooking(String userId) {
         return bookingRepository.findByEnteredAndUserId(false, userId);
+    }
+
+    private String getURIForPosition(final OfficePosition position) {
+        if(position != null) {
+            String path =  "/positions/" + position.getId();
+            URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand().toUri();
+            return uri.toString();
+        }
+        return null;
     }
 }
