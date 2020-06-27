@@ -379,6 +379,8 @@ components:
         position:
           type: integer
           format: int32
+        positionPicture:
+          type: string
     CapacityBody:
       type: object
       required:

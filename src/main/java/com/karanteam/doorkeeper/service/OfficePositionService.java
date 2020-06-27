@@ -29,31 +29,27 @@ public class OfficePositionService {
         officePositionsRepository.saveAll(officePositions);
     }
 
-    public Optional<OfficePosition> findByUserId(final String userId) {
-        return officePositionsRepository.findByUserId(userId);
-    }
-
     public Optional<OfficePosition> findById(final Integer positionId) {
         return officePositionsRepository.findById(positionId);
     }
 
-    public void enter(final String userId) {
-        changeStatus(userId, PositionStatus.TAKEN);
+    public void enter(final Integer id) {
+        changeStatus(id, PositionStatus.TAKEN);
     }
 
-    public void exit(final String userId) {
-        changeStatus(userId, PositionStatus.FREE);
+    public void exit(final Integer id) {
+        changeStatus(id, PositionStatus.FREE);
     }
 
-    private void changeStatus(final String userId, final PositionStatus status) {
-        officePositionsRepository.findByUserId(userId).ifPresent(pos -> {
+    private void changeStatus(final Integer id, final PositionStatus status) {
+        officePositionsRepository.findById(id).ifPresent(pos -> {
             pos.setStatus(status);
             officePositionsRepository.save(pos);
         });
         // TODO modify the picture of the actual status
     }
 
-    public synchronized OfficePosition getNextFreePosition(final String userId) {
+    public synchronized OfficePosition getNextFreePosition() {
         final List<OfficePosition> all = officePositionsRepository.findAll();
         final List<OfficePosition> free =
             all.stream().filter(pos -> pos.getStatus() == PositionStatus.FREE)
@@ -72,7 +68,6 @@ public class OfficePositionService {
             }
             if (available) {
                 pos.setStatus(PositionStatus.BOOKED);
-                pos.setUserId(userId);
                 officePositionsRepository.save(pos);
                 return pos;
             }

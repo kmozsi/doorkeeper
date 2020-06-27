@@ -34,11 +34,11 @@ public class OfficeMapService {
 
     public OfficeMapService(OfficePositionService officePositionService) {
         this.officePositionService = officePositionService;
-        OpenCV.loadShared();
     }
 
     @PostConstruct
     public void init() throws IOException {
+        OpenCV.loadShared();
         storePositions(Files.readAllBytes(readImage("original.jpg").toPath()));
     }
 

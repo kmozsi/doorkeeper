@@ -35,7 +35,6 @@ public class BookingService {
     public void exit(String userId) {
         if (!vipService.isVip(userId)) {
             bookingCacheService.exit(userId);
-            officePositionService.exit(userId);
         }
     }
 
@@ -47,7 +46,7 @@ public class BookingService {
             }
             waitingBooking.setEntered(true);
             bookingRepository.save(waitingBooking);
-            officePositionService.enter(userId);
+            officePositionService.enter(waitingBooking.getOfficePosition().getId());
         }
     }
 
@@ -61,14 +60,13 @@ public class BookingService {
         }
         Optional<Booking> alreadyWaitingUser = findWaitingBooking(userId);
         if (alreadyWaitingUser.isPresent()) {
-            Optional<OfficePosition> officePosition = officePositionService.findByUserId(userId);
-            String uri = getURIForPosition(officePosition);
+            String uri = getURIForPosition(alreadyWaitingUser.get().getOfficePosition());
             return createRegisterResponse(calculatePosition(alreadyWaitingUser.get()), uri);
         }
 
-        Booking booking = bookingRepository.save(Booking.builder().userId(userId).build());
-        OfficePosition officePosition = officePositionService.getNextFreePosition(userId);
-        String uri = getURIForPosition(Optional.ofNullable(officePosition));
+        OfficePosition officePosition = officePositionService.getNextFreePosition();
+        Booking booking = bookingRepository.save(Booking.builder().userId(userId).officePosition(officePosition).build());
+        String uri = getURIForPosition(officePosition);
         return createRegisterResponse(calculatePosition(booking), uri);
     }
 
@@ -92,7 +90,9 @@ public class BookingService {
      * @return @StatusResponse
      */
     public StatusResponse status(String userId) {
-        return new StatusResponse().position(
+        Booking booking = getWaitingBooking(userId);
+        String uri = getURIForPosition(booking.getOfficePosition());
+        return new StatusResponse().positionPicture(uri).position(
             vipService.isVip(userId) ? 0 : calculatePosition(getWaitingBooking(userId))
         );
     }
@@ -109,9 +109,9 @@ public class BookingService {
         return bookingRepository.findByEnteredAndUserId(false, userId);
     }
 
-    private String getURIForPosition(final Optional<OfficePosition> position) {
-        if(position.isPresent()) {
-            String path =  "/positions/" + position.get().getId();
+    private String getURIForPosition(final OfficePosition position) {
+        if(position != null) {
+            String path =  "/positions/" + position.getId();
             URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand().toUri();
             return uri.toString();
         }

@@ -22,5 +22,7 @@ public class Booking {
   private String userId;
   private boolean entered = false;
   private boolean exited = false;
+  @OneToOne
+  private OfficePosition officePosition;
 
 }

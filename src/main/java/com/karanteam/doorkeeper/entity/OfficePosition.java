@@ -23,7 +23,6 @@ public class OfficePosition {
     @NonNull
     private OfficePositionOrientation orientation;
     private PositionStatus status;
-    private String userId;
 
     public int getCenterX() {
         return x + orientation.getCenterX();
