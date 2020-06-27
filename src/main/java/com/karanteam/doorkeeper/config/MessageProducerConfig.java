@@ -20,7 +20,7 @@ public class MessageProducerConfig {
     }
 
     @Bean
-    public Producer<Long, String> messageProducer() {
+    public Producer<Long, String> kafkaProducer() {
         Properties props = new Properties();
 
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, messagingConfig.getServerLocation());

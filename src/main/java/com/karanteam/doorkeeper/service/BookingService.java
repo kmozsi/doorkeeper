@@ -39,14 +39,14 @@ public class BookingService {
 
     public void exit(String userId) {
         if (!vipService.isVip(userId)) {
-            notifyCanEnterSoon();
             bookingCacheService.exit(userId);
+            notifyCanEnterSoon();
         }
     }
 
     private void notifyCanEnterSoon() {
         bookingRepository.findAll().stream().filter(booking ->
-            bookingCacheService.calculatePositionFromOrdinal(booking.getOrdinal()) == messagingConfig.getNotifyPosition() + 1
+            bookingCacheService.calculatePositionFromOrdinal(booking.getOrdinal()) == messagingConfig.getNotifyPosition() - 1
         ).findFirst().ifPresent(booking ->
             messageProducer.sendMessage(booking.getUserId())
         );

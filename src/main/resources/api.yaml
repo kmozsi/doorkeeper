@@ -342,10 +342,6 @@ components:
           format: int32
     CapacityBody:
       type: object
-      required:
-        - capacity
-        - percentage
-        - minimalDistance
       properties:
         capacity:
           type: integer
@@ -356,6 +352,10 @@ components:
         minimalDistance:
           type: integer
           format: int32
+      required:
+        - capacity
+        - percentage
+        - minimalDistance
     VipUsers:
       required:
         - vipUsers

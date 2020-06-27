@@ -19,19 +19,14 @@ public class MessageProducer {
     }
 
     public void sendMessage(final String message) {
-        try {
-            final ProducerRecord<Long, String> record = new ProducerRecord<>(messagingConfig.getTopic(), message);
-            producer.send(record, (metadata, exception) -> {
-                if (metadata != null) {
-                    log.info("Notification sent (key={} value={}), meta(partition={}, offset={})",
-                        record.key(), record.value(), metadata.partition(), metadata.offset());
-                } else {
-                    log.error("Notification could not be sent: " + exception.getMessage());
-                }
-            });
-        } finally {
-            producer.flush();
-            producer.close();
-        }
+        final ProducerRecord<Long, String> record = new ProducerRecord<>(messagingConfig.getTopic(), message);
+        producer.send(record, (metadata, exception) -> {
+            if (metadata != null) {
+                log.info("Notification sent (key={} value={}), meta(partition={}, offset={})",
+                    record.key(), record.value(), metadata.partition(), metadata.offset());
+            } else {
+                log.error("Notification could not be sent: {}", exception.getMessage());
+            }
+        });
     }
 }
