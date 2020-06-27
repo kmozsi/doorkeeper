@@ -1,6 +1,7 @@
 package com.karanteam.doorkeeper.entity;
 
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
+import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -21,5 +22,21 @@ public class OfficePosition {
     private int y;
     @NonNull
     private OfficePositionOrientation orientation;
+    private PositionStatus status;
+    private String userId;
+
+    public int getCenterX() {
+        return x + orientation.getCenterX();
+    }
+
+    public int getCenterY() {
+        return y + orientation.getCenterY();
+    }
+
+    public double distanceFrom(OfficePosition other) {
+        double ac = Math.abs(y - other.y);
+        double cb = Math.abs(x - other.x);
+        return Math.hypot(ac, cb);
+    }
 
 }

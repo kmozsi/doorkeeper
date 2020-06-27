@@ -11,4 +11,5 @@ public class CapacityConfig {
     private Integer initialCapacity;
     private Integer initialPercentage;
     private Integer initialMinDistance;
+    private Integer pixelSizeInCm;
 }

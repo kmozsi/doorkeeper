@@ -1,18 +1,17 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
-
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.Color;
+import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import nu.pattern.OpenCV;
 import org.opencv.core.Core;
@@ -38,8 +37,14 @@ public class OfficeMapService {
         OpenCV.loadShared();
     }
 
+    @PostConstruct
+    public void init() throws IOException {
+        storePositions(Files.readAllBytes(readImage("original.jpg").toPath()));
+    }
+
     public int storePositions(byte[] bytes) throws IOException {
         Mat uploadedMat = Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_UNCHANGED);
+        Mat originalMat = uploadedMat.clone();
         File chairFile = readImage("chair_binary.png");
         Mat chairMat = readFileToMat(chairFile);
 
@@ -50,7 +55,7 @@ public class OfficeMapService {
         for (int i = 0; i < 4; i++) {
             Mat rotatedChair = rotatedMat(preparedChair, i * 90);
             Mat positions = findPositions(preparedOffice, rotatedChair, 4000000);
-            officePositions.addAll(readPositions(positions, NORTH)); // TODO need orientation?
+            officePositions.addAll(readFreePositions(originalMat, positions, OfficePositionOrientation.getByRotations(i)));
         }
 
         officePositionService.setPositions(officePositions);
@@ -88,15 +93,21 @@ public class OfficeMapService {
         return positions;
     }
 
-    private List<OfficePosition> readPositions(Mat positions, OfficePositionOrientation officePositionOrientation) {
-        return IntStream.range(0, (int)positions.size().height).mapToObj(
+    private List<OfficePosition> readFreePositions(Mat originalMat, Mat positions, OfficePositionOrientation officePositionOrientation) {
+        final List<OfficePosition> officePositions = new ArrayList<>();
+        IntStream.range(0, (int)positions.size().height).forEach(
             index -> {
                 double[] coords = positions.get(index, 0);
                 int x = (int)coords[0];
                 int y = (int)coords[1];
-                return OfficePosition.builder().x(x).y(y).orientation(officePositionOrientation).build();
+                Rect rect = new Rect(x, y, 20, 20);
+                Scalar scalar = Core.mean(originalMat.submat(rect));
+                if (Color.GREEN.match(scalar, 35)) {
+                    officePositions.add(OfficePosition.builder().x(x).y(y).status(PositionStatus.FREE).orientation(officePositionOrientation).build());
+                }
             }
-        ).collect(Collectors.toList());
+        );
+        return officePositions;
     }
 
     private void drawFoundPositions(Mat originalMat, Mat destinationMat, Mat positions) {
@@ -156,5 +167,13 @@ public class OfficeMapService {
         Mat rotatedMat = original.clone();
         Core.rotate(rotatedMat, rotatedMat, rotationCode);
         return rotatedMat;
+    }
+
+    public byte[] markPosition(OfficePosition position) throws IOException {
+        File officeFile = readImage("original.jpg");
+        Mat officeMat = readFileToMat(officeFile); // TODO current office pic
+        Rect rect = new Rect(position.getX(), position.getY(), 20, 20);
+        Imgproc.rectangle(officeMat, rect, new Scalar(0,220,220));
+        return writeMatToImage(officeMat);
     }
 }
