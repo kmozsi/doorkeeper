@@ -45,7 +45,7 @@ public class BookingService {
 
     private void notifyCanEnterSoon() {
         bookingRepository.findAll().stream().filter(booking ->
-            bookingCacheService.calculatePositionFromOrdinal(booking.getOrdinal()) == messagingConfig.getNotifyPosition() - 1
+            bookingCacheService.calculatePositionFromOrdinal(booking.getOrdinal()) == messagingConfig.getNotifyPosition()
         ).findFirst().ifPresent(booking ->
             messagingService.sendMessage(booking.getUserId())
         );
