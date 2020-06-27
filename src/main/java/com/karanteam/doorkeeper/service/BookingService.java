@@ -1,5 +1,6 @@
 package com.karanteam.doorkeeper.service;
 
+import com.karanteam.doorkeeper.config.MessagingConfig;
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
@@ -12,6 +13,8 @@ import org.openapitools.model.StatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Optional;
+
 /**
  * Service for office booking functions.
  */
@@ -21,21 +24,38 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookingCacheService bookingCacheService;
     private final VipService vipService;
+    private final MessagingConfig messagingConfig;
+    private final MessagingService messagingService;
     private final OfficePositionService officePositionService;
 
-    public BookingService(BookingRepository bookingRepository,
-        BookingCacheService bookingCacheService, VipService vipService,
-        OfficePositionService officePositionService) {
+    public BookingService(
+        BookingRepository bookingRepository,
+        BookingCacheService bookingCacheService,
+        VipService vipService,
+        OfficePositionService officePositionService,
+        MessagingConfig messagingConfig,
+        MessagingService messagingService) {
         this.bookingRepository = bookingRepository;
         this.bookingCacheService = bookingCacheService;
         this.vipService = vipService;
         this.officePositionService = officePositionService;
+        this.messagingConfig = messagingConfig;
+        this.messagingService = messagingService;
     }
 
     public void exit(String userId) {
         if (!vipService.isVip(userId)) {
             bookingCacheService.exit(userId);
+            notifyCanEnterSoon();
         }
+    }
+
+    private void notifyCanEnterSoon() {
+        bookingRepository.findAll().stream().filter(booking ->
+            bookingCacheService.calculatePositionFromOrdinal(booking.getOrdinal()) == messagingConfig.getNotifyPosition()
+        ).findFirst().ifPresent(booking ->
+            messagingService.sendMessage(booking.getUserId())
+        );
     }
 
     public void entry(String userId) {

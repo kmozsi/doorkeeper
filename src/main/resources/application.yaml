@@ -13,3 +13,8 @@ application:
   initialPercentage: 10
   initialMinDistance: 5
   pixelSizeInCm: 10
+messaging:
+  topic: entry-notification
+  serverLocation: localhost:9092
+  clientId: doorkeeper
+  notifyPosition: 3
