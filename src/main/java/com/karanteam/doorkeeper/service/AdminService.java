@@ -1,6 +1,6 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.config.CapacityConfig;
+import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficeCapacity;
 import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +17,11 @@ import java.util.Optional;
 public class AdminService {
 
     private final OfficeCapacityRepository capacityRepository;
-    private final CapacityConfig capacityConfig;
+    private final ApplicationConfig applicationConfig;
 
-    public AdminService(OfficeCapacityRepository capacityRepository, CapacityConfig capacityConfig) {
+    public AdminService(OfficeCapacityRepository capacityRepository, ApplicationConfig applicationConfig) {
         this.capacityRepository = capacityRepository;
-        this.capacityConfig = capacityConfig;
+        this.applicationConfig = applicationConfig;
     }
 
     public int getActualDailyCapacity() {
@@ -55,9 +55,9 @@ public class AdminService {
 
     private OfficeCapacity getInitialOfficeCapacity() {
         OfficeCapacity capacity = new OfficeCapacity();
-        capacity.setCapacity(capacityConfig.getInitialCapacity());
-        capacity.setAllowedPercentage(capacityConfig.getInitialPercentage());
-        capacity.setMinimalDistance(capacityConfig.getInitialMinDistance());
+        capacity.setCapacity(applicationConfig.getInitialCapacity());
+        capacity.setAllowedPercentage(applicationConfig.getInitialPercentage());
+        capacity.setMinimalDistance(applicationConfig.getInitialMinDistance());
         return capacity;
     }
 }

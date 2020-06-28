@@ -1,6 +1,6 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.config.CapacityConfig;
+import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.repository.OfficePositionsRepository;
@@ -14,14 +14,14 @@ import java.util.List;
 public class OfficePositionService {
 
     private final OfficePositionsRepository officePositionsRepository;
-    private final CapacityConfig capacityConfig;
+    private final ApplicationConfig applicationConfig;
     private final AdminService adminService;
 
     public OfficePositionService(
         OfficePositionsRepository officePositionsRepository,
-        CapacityConfig capacityConfig, AdminService adminService) {
+        ApplicationConfig applicationConfig, AdminService adminService) {
         this.officePositionsRepository = officePositionsRepository;
-        this.capacityConfig = capacityConfig;
+        this.applicationConfig = applicationConfig;
         this.adminService = adminService;
     }
 
@@ -76,7 +76,7 @@ public class OfficePositionService {
     }
 
     private boolean isDistanceAllowed(OfficePosition position, OfficePosition otherPosition) {
-        return position.distanceFrom(otherPosition) * capacityConfig.getPixelSizeInCm()
+        return position.distanceFrom(otherPosition) * applicationConfig.getPixelSizeInCm()
             >= adminService.getActualMinimalDistance() * 100;
     }
 }

@@ -1,6 +1,6 @@
 package com.karanteam.doorkeeper.controller;
 
-import com.karanteam.doorkeeper.service.OfficeMapService;
+import com.karanteam.doorkeeper.service.ImageProcessingTuningService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 
 @Controller
-public class ImageProcessingController {
+public class ImageProcessingTuningController {
 
-    private final OfficeMapService officeMapService;
+    private final ImageProcessingTuningService imageProcessingTuningService;
 
-    public ImageProcessingController(OfficeMapService officeMapService) {
-        this.officeMapService = officeMapService;
+    public ImageProcessingTuningController(ImageProcessingTuningService imageProcessingTuningService) {
+        this.imageProcessingTuningService = imageProcessingTuningService;
     }
+
 
 //        public static final int THRESH_BINARY = 0;
 //        public static final int THRESH_BINARY_INV = 1;
@@ -32,13 +33,12 @@ public class ImageProcessingController {
         produces = MediaType.IMAGE_PNG_VALUE
     )
     public ResponseEntity<byte[]> showPreparedImage(
-        @RequestParam(required = false, defaultValue = "true") boolean filtered,
         @RequestParam(required = false, defaultValue = "true") boolean gray,
         @RequestParam(required = false, defaultValue = "216")  int threshold,
         @RequestParam(required = false, defaultValue = "1000")  int maxValue,
         @RequestParam(required = false, defaultValue = "0")  int threshMethod
         ) throws IOException {
-        return ResponseEntity.ok(officeMapService.createPreparedImage(gray, filtered, threshold, maxValue, threshMethod));
+        return ResponseEntity.ok(imageProcessingTuningService.createPreparedImage(gray, threshold, maxValue, threshMethod));
     }
 
     @GetMapping(
@@ -46,14 +46,13 @@ public class ImageProcessingController {
         produces = MediaType.IMAGE_PNG_VALUE
     )
     public ResponseEntity<byte[]> findPositions(
-        @RequestParam(required = false, defaultValue = "true") boolean filtered,
         @RequestParam(required = false, defaultValue = "true") boolean gray,
         @RequestParam(required = false, defaultValue = "216")  int threshold,
         @RequestParam(required = false, defaultValue = "1000")  int maxValue,
         @RequestParam(required = false, defaultValue = "0")  int threshMethod,
         @RequestParam(required = false, defaultValue = "4000000")  int matchingThreshold
     ) throws IOException {
-        return ResponseEntity.ok(officeMapService.findPositions(gray, filtered, threshold, maxValue, threshMethod, matchingThreshold));
+        return ResponseEntity.ok(imageProcessingTuningService.findPositions(gray, threshold, maxValue, threshMethod, matchingThreshold));
     }
 
 //    @PostMapping(value = "/uploadOfficeMap")

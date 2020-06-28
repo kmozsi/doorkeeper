@@ -13,6 +13,12 @@ application:
   initialPercentage: 10
   initialMinDistance: 5
   pixelSizeInCm: 10
+  image:
+    grayScale: true
+    threshold: 220
+    maxValue: 1000
+    thresholdMethod: 0
+    matchingThreshold: 4000000
 messaging:
   topic: entry-notification
   serverLocation: localhost:9092

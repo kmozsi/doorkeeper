@@ -1,6 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.config.CapacityConfig;
 import com.karanteam.doorkeeper.entity.OfficeCapacity;
 import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(properties = { "application.initialCapacity=200" })
 public class AdminServiceTest {
 
     private static final int CAPACITY = 200;
@@ -29,9 +28,6 @@ public class AdminServiceTest {
     @MockBean
     private OfficeCapacityRepository capacityRepository;
 
-    @MockBean
-    private CapacityConfig capacityConfig;
-
     @Test
     public void getActualDailyCapacityWhenAlreadyExist() {
         OfficeCapacity capacity = OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE);
@@ -42,10 +38,7 @@ public class AdminServiceTest {
     @Test
     public void getInitialDailyCapacity() {
         when(capacityRepository.findTopByOrderByIdAsc()).thenReturn(Optional.empty());
-        when(capacityConfig.getInitialCapacity()).thenReturn(CAPACITY);
-        when(capacityConfig.getInitialPercentage()).thenReturn(PERCENTAGE);
         when(capacityRepository.save(any())).thenReturn(OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE));
-
         assertEquals(20, capacityService.getActualDailyCapacity());
     }
 
