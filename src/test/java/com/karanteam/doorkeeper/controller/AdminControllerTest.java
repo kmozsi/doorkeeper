@@ -5,6 +5,7 @@ import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.AdminService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,6 +36,11 @@ public class AdminControllerTest {
     @MockBean
     private JwtService jwtService;
 
+    @BeforeEach
+    public void init() {
+        clearInvocations();
+    }
+
     @Test
     public void setCapacityFailsBecauseTokenIsInvalid() throws Exception {
         when(jwtService.parseToken(matches(TOKEN), any())).thenThrow(new JWTVerificationException(""));
@@ -59,6 +65,5 @@ public class AdminControllerTest {
             .andExpect(status().isOk());
 
         verify(adminService, times(1)).setCapacity(any());
-        verifyNoMoreInteractions(adminService);
     }
 }

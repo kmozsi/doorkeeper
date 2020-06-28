@@ -50,7 +50,7 @@ public class EntryIntegrationTest {
     private JwtService jwtService;
 
     @BeforeEach
-    public void deleteTables() throws IOException {
+    public void deleteTables() {
         bookingRepository.deleteAll();
         officeCapacityRepository.deleteAll();
     }
@@ -274,7 +274,7 @@ public class EntryIntegrationTest {
     }
 
     private void thereIsTwoPlaceForToday() {
-        officeCapacityRepository.save(OfficeCapacity.of(1, 10, 20, 5));
+        officeCapacityRepository.save(OfficeCapacity.of(1, 10, 20, 5, 12));
     }
 
     private void thereAreTwoEmployeeInTheBuilding() throws Exception {

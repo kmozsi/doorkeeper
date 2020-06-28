@@ -21,6 +21,7 @@ public class AdminServiceTest {
     private static final int CAPACITY = 200;
     private static final int PERCENTAGE = 10;
     private static final int MIN_DISTANCE = 5;
+    private static final int MAX_MAP_CAPACITY = 20;
 
     @Autowired
     private AdminService capacityService;
@@ -30,15 +31,29 @@ public class AdminServiceTest {
 
     @Test
     public void getActualDailyCapacityWhenAlreadyExist() {
-        OfficeCapacity capacity = OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE);
+        OfficeCapacity capacity = OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE, MAX_MAP_CAPACITY);
         when(capacityRepository.findTopByOrderByIdAsc()).thenReturn(Optional.of(capacity));
         assertEquals(20, capacityService.getActualDailyCapacity());
     }
 
     @Test
+    public void getActualDailyCapacityWhenMapCapacityIsLess() {
+        OfficeCapacity capacity = OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE, 2);
+        when(capacityRepository.findTopByOrderByIdAsc()).thenReturn(Optional.of(capacity));
+        assertEquals(2, capacityService.getActualDailyCapacity());
+    }
+
+    @Test
     public void getInitialDailyCapacity() {
         when(capacityRepository.findTopByOrderByIdAsc()).thenReturn(Optional.empty());
-        when(capacityRepository.save(any())).thenReturn(OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE));
+        when(capacityRepository.save(any())).thenReturn(OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE, MAX_MAP_CAPACITY));
+        assertEquals(20, capacityService.getActualDailyCapacity());
+    }
+
+    @Test
+    public void getInitialDailyCapacityWhenMapCapacityNotSet() {
+        when(capacityRepository.findTopByOrderByIdAsc()).thenReturn(Optional.empty());
+        when(capacityRepository.save(any())).thenReturn(OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE, 0));
         assertEquals(20, capacityService.getActualDailyCapacity());
     }
 
@@ -48,7 +63,7 @@ public class AdminServiceTest {
         int newPercentage = 50;
         int newDistance = 1;
 
-        OfficeCapacity capacity = OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE);
+        OfficeCapacity capacity = OfficeCapacity.of(1, CAPACITY, PERCENTAGE, MIN_DISTANCE, MAX_MAP_CAPACITY);
         CapacityBody capacityBody = new CapacityBody();
         capacityBody.setCapacity(newCapacity);
         capacityBody.setPercentage(newPercentage);
