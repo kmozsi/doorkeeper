@@ -1,5 +1,7 @@
 package com.karanteam.doorkeeper.service;
 
+import static com.karanteam.doorkeeper.enumeration.Color.YELLOW;
+
 import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.data.ImageProcessingConfiguration;
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
@@ -16,12 +18,13 @@ import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import nu.pattern.OpenCV;
-import org.opencv.core.*;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
-
-import static com.karanteam.doorkeeper.enumeration.Color.RED;
-import static com.karanteam.doorkeeper.enumeration.Color.YELLOW;
 
 @Service
 @Slf4j
@@ -124,12 +127,22 @@ public class OfficeMapService {
 
     public byte[] markPosition(OfficePosition position) {
         Mat officeMat = getCurrentOfficeMat();
+        imageService.fillPosition(
+            officeMat,
+            position.getX(),
+            position.getY(),
+            position.getOrientation().getSize(),
+            YELLOW.getColor(),
+            imageProcessingConfiguration.getColoringThreshold(),
+            imageProcessingConfiguration.getColoringThresholdMethod(),
+            imageProcessingConfiguration.getColoringMaxValue()
+        );
         imageService.markPosition(
             officeMat,
             position.getX(),
             position.getY(),
             position.getOrientation().getSize(),
-            YELLOW.getColor()
+            new Scalar(0.0, 0.0, 160.0)
         );
         return imageService.writeMatToImage(officeMat);
     }
