@@ -7,6 +7,10 @@ public enum Color {
     GREEN(
         new Scalar(214.0, 255.0, 178.0, 0.0),
         color -> color.val[1] > color.val[0] - 20 && color.val[1] > color.val[2] - 20
+    ),
+    YELLOw(
+        new Scalar(0.0, 220.0, 220.0),
+        color -> color.val[1] > 200.0 && color.val[2] > 200.0 && color.val[0] < 50.0
     );
 
     private final Scalar color;
@@ -15,6 +19,10 @@ public enum Color {
     Color(Scalar color, Predicate<Scalar> condition) {
         this.color = color;
         this.condition = condition;
+    }
+
+    public Scalar getColor() {
+        return color;
     }
 
     public boolean match(Scalar other, int threshold) {
