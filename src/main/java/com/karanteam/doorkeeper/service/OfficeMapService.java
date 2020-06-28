@@ -52,13 +52,23 @@ public class OfficeMapService {
     @PostConstruct
     public void init() throws IOException {
         OpenCV.loadShared();
-        storePositions(Files.readAllBytes(imageService.readImage("original.jpg").toPath()));
+        storeOfficeAndPositions(Files.readAllBytes(imageService.readImage("original.jpg").toPath()));
     }
 
-    public int storePositions(byte[] bytes) throws IOException {
+    public int storeOfficeAndPositions(byte[] bytes) throws IOException {
         storeNewOffice(bytes);
+        return storePositions(imageService.loadMat(bytes));
+    }
+
+    private void storeNewOffice(byte[] content) {
+        Image office = imageRepository.findByKey(Image.OFFICE).orElse(new Image());
+        office.setKey(Image.OFFICE);
+        office.setContent(content);
+        imageRepository.save(office);
+    }
+
+    private int storePositions(Mat uploadedMat) throws IOException {
         Mat chairMat = imageService.readMat("chair_binary.png");
-        Mat uploadedMat = imageService.loadMat(bytes);
         Mat originalMat = uploadedMat.clone();
 
         Mat preparedOffice = prepareImage(uploadedMat);
@@ -76,11 +86,8 @@ public class OfficeMapService {
         return positionCount;
     }
 
-    private void storeNewOffice(byte[] content) {
-        Image office = imageRepository.findByKey(Image.OFFICE).orElse(new Image());
-        office.setKey(Image.OFFICE);
-        office.setContent(content);
-        imageRepository.save(office);
+    public void recalculatePositions() throws IOException {
+        storePositions(getCurrentOfficeMat());
     }
 
     public Mat findPositions(Mat preparedOffice, Mat preparedChair, int matchingThreshold) {

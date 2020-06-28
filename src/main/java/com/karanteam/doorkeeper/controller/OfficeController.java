@@ -37,7 +37,7 @@ public class OfficeController implements OfficeApi {
         String userId = jwtService.parseToken(xToken, Role.HR);
         log.info("Received set positions call with userId: " + userId);
         try {
-            BigDecimal posCount = BigDecimal.valueOf(officeMapService.storePositions(officeMap.getBytes()));
+            BigDecimal posCount = BigDecimal.valueOf(officeMapService.storeOfficeAndPositions(officeMap.getBytes()));
             return ResponseEntity.ok(new PositionsResponse().message(posCount));
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();

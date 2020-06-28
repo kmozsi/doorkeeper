@@ -43,7 +43,7 @@ public class OfficeMapServiceTest {
 
         File file = ResourceUtils.getFile("classpath:image/original.jpg");
         byte[] bytes = Files.readAllBytes(file.toPath());
-        int count = officeMapService.storePositions(bytes);
+        int count = officeMapService.storeOfficeAndPositions(bytes);
         assertEquals(10, count);
 
         verify(officePositionService, times(2)).setPositions(captor.capture()); // TODO init miatt

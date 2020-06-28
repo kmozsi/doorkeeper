@@ -61,7 +61,7 @@ public class OfficeControllerTest {
             .header(HEADER_TOKEN_NAME, TOKEN))
             .andExpect(status().isForbidden());
 
-        verify(officeMapService, never()).storePositions(any());
+        verify(officeMapService, never()).storeOfficeAndPositions(any());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class OfficeControllerTest {
             .header(HEADER_TOKEN_NAME, TOKEN))
             .andExpect(status().isOk());
 
-        verify(officeMapService, times(1)).storePositions(any());
+        verify(officeMapService, times(1)).storeOfficeAndPositions(any());
         verifyNoMoreInteractions(officeMapService);
     }
 
