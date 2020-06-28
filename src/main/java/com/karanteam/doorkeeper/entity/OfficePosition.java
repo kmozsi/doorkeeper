@@ -24,17 +24,17 @@ public class OfficePosition {
     private OfficePositionOrientation orientation;
     private PositionStatus status;
 
-    public int getCenterX() {
+    private int getCenterX() {
         return x + orientation.getCenterX();
     }
 
-    public int getCenterY() {
+    private int getCenterY() {
         return y + orientation.getCenterY();
     }
 
     public double distanceFrom(OfficePosition other) {
-        double ac = Math.abs(y - other.y);
-        double cb = Math.abs(x - other.x);
+        double ac = Math.abs(getCenterY() - other.getCenterY());
+        double cb = Math.abs(getCenterX() - other.getCenterX());
         return Math.hypot(ac, cb);
     }
 

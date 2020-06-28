@@ -15,7 +15,7 @@ application:
   pixelSizeInCm: 10
   image:
     grayScale: true
-    threshold: 220
+    threshold: 222
     maxValue: 1000
     thresholdMethod: 0
     matchingThreshold: 4000000
