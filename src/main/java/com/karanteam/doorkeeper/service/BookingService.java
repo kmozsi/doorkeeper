@@ -42,6 +42,10 @@ public class BookingService {
         this.messagingService = messagingService;
     }
 
+    public boolean isThereActiveBooking() {
+        return bookingRepository.countAllByExited(false) > 0;
+    }
+
     public void exit(String userId) {
         if (!vipService.isVip(userId)) {
             Booking nextBooking = getNextWaiting();

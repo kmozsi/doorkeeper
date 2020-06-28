@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, String> {
+    Integer countAllByExited(boolean exited);
     Integer countAllByExitedAndOrdinalLessThan(boolean exited, int ordinal);
 
     Booking findTopByOrderByOrdinalAsc();

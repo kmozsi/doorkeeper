@@ -345,6 +345,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PositionsResponse"
+        '400':
+          description: Cannot update office map because there are active bookings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         '403':
           description: Forbidden
           content:
