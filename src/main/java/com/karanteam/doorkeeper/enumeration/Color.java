@@ -10,7 +10,7 @@ public enum Color {
     ),
     RED(
         new Scalar(178.0, 178.0, 255.0, 0.0),
-        color -> color.val[1] > color.val[0] - 20 && color.val[1] > color.val[2] - 20
+        color -> color.val[2] > color.val[0] - 20 && color.val[2] > color.val[1] - 20
     ),
     YELLOW(
         new Scalar(0.0, 220.0, 220.0),

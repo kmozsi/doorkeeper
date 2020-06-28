@@ -1,7 +1,7 @@
 package com.karanteam.doorkeeper.enumeration;
 
 public enum PositionStatus {
-    FREE(Color.RED), BOOKED(Color.YELLOW), TAKEN(Color.RED);
+    FREE(null), BOOKED(Color.YELLOW), TAKEN(Color.RED);
 
     private final Color color;
 

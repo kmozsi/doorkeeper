@@ -115,8 +115,15 @@ public class OfficeMapService {
         );
     }
 
-    public byte[] markPosition(OfficePosition position) throws IOException {
-        Mat officeMat = imageService.readMat("original.jpg"); // TODO current office pic
+    private Mat getCurrentOfficeMat() {
+        Image office = imageRepository.findByKey(Image.OFFICE).orElseThrow(
+            () -> new RuntimeException("Cannot find office map!")
+        );
+        return imageService.loadMat(office.getContent());
+    }
+
+    public byte[] markPosition(OfficePosition position) {
+        Mat officeMat = getCurrentOfficeMat();
         imageService.markPosition(
             officeMat,
             position.getX(),
@@ -127,8 +134,8 @@ public class OfficeMapService {
         return imageService.writeMatToImage(officeMat);
     }
 
-    public byte[] getLayout() throws IOException {
-        Mat officeMat = imageService.readMat("original.jpg"); // TODO current office pic
+    public byte[] getLayout() {
+        Mat officeMat = getCurrentOfficeMat();
 
         List<OfficePosition> allPositions = officePositionService.getAllPositions();
         allPositions.forEach(
@@ -136,11 +143,10 @@ public class OfficeMapService {
                 officeMat, position.getX(), position.getY(), position.getOrientation().getSize(), position.getStatus().getColor()
             )
         );
-    public byte[] markPosition(OfficePosition position) {
-        Mat officeMat = getCurrentOfficeMat();
-        imageService.markPosition(officeMat, position.getX(), position.getY(), position.getOrientation().getSize(), YELLOW.getColor());
+
         return imageService.writeMatToImage(officeMat);
     }
+
 
     private void fillWithColor(Mat mat, int x, int y, Size size, Color color) {
         if (color != null) {
@@ -151,12 +157,5 @@ public class OfficeMapService {
                 imageProcessingConfiguration.getColoringMaxValue()
             );
         }
-    }
-
-    private Mat getCurrentOfficeMat() {
-        Image office = imageRepository.findByKey(Image.OFFICE).orElseThrow(
-            () -> new RuntimeException("Cannot find office map!")
-        );
-        return imageService.loadMat(office.getContent());
     }
 }
