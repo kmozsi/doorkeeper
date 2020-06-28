@@ -357,6 +357,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /layout:
+    get:
+      summary: get layout
+      operationId: getLayout
+      tags:
+        - office
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: The layout
+          content:
+            image/png:
+              schema:
+                type: string
+                format: byte
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     RegisterResponse:
