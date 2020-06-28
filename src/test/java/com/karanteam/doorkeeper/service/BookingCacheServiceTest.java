@@ -4,6 +4,7 @@ import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
 import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -144,8 +145,10 @@ public class BookingCacheServiceTest {
         when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
             .thenReturn(Optional.of(activeBooking));
         bookingService.exit(USER_ID);
-        verify(bookingRepository).save(closedBooking);
         verify(officePositionService).exit(closedBooking.getOfficePosition());
+        verify(bookingRepository).save(argThat(booking ->
+            booking.getUserId().equals(USER_ID) && booking.isExited() && booking.getOfficePosition() == null)
+        );
     }
 
 }
