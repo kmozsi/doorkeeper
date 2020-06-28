@@ -20,7 +20,6 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
 
-import static com.karanteam.doorkeeper.enumeration.Color.RED;
 import static com.karanteam.doorkeeper.enumeration.Color.YELLOW;
 
 @Service
@@ -32,16 +31,18 @@ public class OfficeMapService {
     private final ApplicationConfig applicationConfig;
     private final ImageRepository imageRepository;
     private final ImageProcessingConfiguration imageProcessingConfiguration;
+    private final AdminService adminService;
 
     public OfficeMapService(
         OfficePositionService officePositionService,
         ImageService imageService, ApplicationConfig applicationConfig,
-        ImageRepository imageRepository) {
+        ImageRepository imageRepository, AdminService adminService) {
         this.officePositionService = officePositionService;
         this.imageService = imageService;
         this.applicationConfig = applicationConfig;
         this.imageRepository = imageRepository;
         this.imageProcessingConfiguration = applicationConfig.getImage();
+        this.adminService = adminService;
     }
 
     @PostConstruct
@@ -67,7 +68,9 @@ public class OfficeMapService {
         }
 
         officePositionService.setPositions(officePositions);
-        return officePositions.size();
+        int positionCount = officePositions.size();
+        adminService.setMapCapacity(positionCount);
+        return positionCount;
     }
 
     private void storeNewOffice(byte[] content) {
