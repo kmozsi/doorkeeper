@@ -1,25 +1,12 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
-import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
+import com.karanteam.doorkeeper.config.MessagingConfig;
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
-import java.util.Collections;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.RegisterResponse;
@@ -27,11 +14,23 @@ import org.openapitools.model.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
+import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class BookingServiceTest {
 
     private static final String USER_ID = "USER_ID";
+    private static final String USER_ID2 = "USER_ID2";
 
     @Autowired
     private BookingService bookingService;
@@ -50,6 +49,9 @@ public class BookingServiceTest {
 
     @MockBean
     private BookingCacheService bookingCacheService;
+
+    @SpyBean
+    private MessagingConfig messagingConfig;
 
     private static final OfficePosition FREE_POSITION = OfficePosition.builder()
         .id(1).orientation(NORTH).status(PositionStatus.FREE).build();
@@ -85,6 +87,25 @@ public class BookingServiceTest {
         verify(officePositionService, never()).getNextFreePosition();
         verify(bookingRepository, never()).save(any());
         verify(messagingService, never()).sendMessage(any());
+    }
+
+    @Test
+    public void callingExitWithRegularUserThenNotify() {
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(Booking.builder().ordinal(0).userId(USER_ID).build());
+        bookings.add(Booking.builder().ordinal(1).userId(USER_ID2).build());
+
+        when(bookingCacheService.calculatePositionFromOrdinal(0)).thenReturn(0);
+        when(bookingCacheService.calculatePositionFromOrdinal(1)).thenReturn(1);
+        when(vipService.isVip(anyString())).thenReturn(false);
+        when(bookingRepository.findAll()).thenReturn(bookings);
+        when(messagingConfig.getNotifyPosition()).thenReturn(1);
+        doNothing().when(messagingService).sendMessage(anyString());
+
+        bookingService.exit(USER_ID);
+
+        verify(bookingCacheService, times(1)).exit(USER_ID);
+        verify(messagingService, times(1)).sendMessage(USER_ID2);
     }
 
     @Test
