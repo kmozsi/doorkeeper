@@ -20,6 +20,7 @@ public class OfficeCapacity {
     private int capacity;
     private int allowedPercentage;
     private int minimalDistance;
+    private int maxMapCapacity;
 
     public void setMinimalDistance(final int minimalDistance) {
         if (minimalDistance < 0) {

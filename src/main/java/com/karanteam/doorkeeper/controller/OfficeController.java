@@ -40,7 +40,7 @@ public class OfficeController implements OfficeApi {
             BigDecimal posCount = BigDecimal.valueOf(officeMapService.storePositions(officeMap.getBytes()));
             return ResponseEntity.ok(new PositionsResponse().message(posCount));
         } catch (IOException e) {
-            return (ResponseEntity<PositionsResponse>) ResponseEntity.badRequest();
+            return ResponseEntity.badRequest().build();
         }
     }
 

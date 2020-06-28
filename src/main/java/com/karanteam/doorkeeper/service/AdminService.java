@@ -25,7 +25,10 @@ public class AdminService {
     }
 
     public int getActualDailyCapacity() {
-        return getActualOfficeCapacity().getDailyCapacity();
+        OfficeCapacity capacity = getActualOfficeCapacity();
+        int dailyCapacity = capacity.getDailyCapacity();
+        int maxCapacityOnMap = capacity.getMaxMapCapacity();
+        return Math.min(dailyCapacity, maxCapacityOnMap);
     }
 
     public int getActualMinimalDistance() {
@@ -38,6 +41,12 @@ public class AdminService {
         capacity.setAllowedPercentage(capacityBody.getPercentage());
         capacity.setMinimalDistance(capacityBody.getMinimalDistance());
         log.info("New daily capacity set: " + capacity.getDailyCapacity());
+        capacityRepository.save(capacity);
+    }
+
+    public void setMapCapacity(int mapCapacity) {
+        OfficeCapacity capacity = getActualOfficeCapacity();
+        capacity.setMaxMapCapacity(mapCapacity);
         capacityRepository.save(capacity);
     }
 
@@ -58,6 +67,7 @@ public class AdminService {
         capacity.setCapacity(applicationConfig.getInitialCapacity());
         capacity.setAllowedPercentage(applicationConfig.getInitialPercentage());
         capacity.setMinimalDistance(applicationConfig.getInitialMinDistance());
+        capacity.setMaxMapCapacity(capacity.getDailyCapacity());
         return capacity;
     }
 }

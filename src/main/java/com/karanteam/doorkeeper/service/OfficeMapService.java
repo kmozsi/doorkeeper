@@ -35,16 +35,18 @@ public class OfficeMapService {
     private final ApplicationConfig applicationConfig;
     private final ImageRepository imageRepository;
     private final ImageProcessingConfiguration imageProcessingConfiguration;
+    private final AdminService adminService;
 
     public OfficeMapService(
         OfficePositionService officePositionService,
         ImageService imageService, ApplicationConfig applicationConfig,
-        ImageRepository imageRepository) {
+        ImageRepository imageRepository, AdminService adminService) {
         this.officePositionService = officePositionService;
         this.imageService = imageService;
         this.applicationConfig = applicationConfig;
         this.imageRepository = imageRepository;
         this.imageProcessingConfiguration = applicationConfig.getImage();
+        this.adminService = adminService;
     }
 
     @PostConstruct
@@ -69,8 +71,9 @@ public class OfficeMapService {
             officePositions.addAll(readFreePositions(originalMat, positions, OfficePositionOrientation.getByRotations(i)));
         }
 
-        officePositionService.setPositions(officePositions);
-        return officePositions.size();
+        int positionCount = officePositionService.setPositions(officePositions);
+        adminService.setMapCapacity(positionCount);
+        return positionCount;
     }
 
     private void storeNewOffice(byte[] content) {
