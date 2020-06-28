@@ -8,7 +8,7 @@ public enum Color {
         new Scalar(214.0, 255.0, 178.0, 0.0),
         color -> color.val[1] > color.val[0] - 20 && color.val[1] > color.val[2] - 20
     ),
-    YELLOw(
+    YELLOW(
         new Scalar(0.0, 220.0, 220.0),
         color -> color.val[1] > 200.0 && color.val[2] > 200.0 && color.val[0] < 50.0
     );
