@@ -67,8 +67,7 @@ public class OfficeMapService {
             officePositions.addAll(readFreePositions(originalMat, positions, OfficePositionOrientation.getByRotations(i)));
         }
 
-        officePositionService.setPositions(officePositions);
-        int positionCount = officePositions.size();
+        int positionCount = officePositionService.setPositions(officePositions);
         adminService.setMapCapacity(positionCount);
         return positionCount;
     }
