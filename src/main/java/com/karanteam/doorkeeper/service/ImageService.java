@@ -13,8 +13,6 @@ import java.nio.file.Files;
 
 @Service
 public class ImageService {
-
-    public static final Scalar YELLOw = new Scalar(0,220,220);
     private static final String BASE_PATH = "classpath:image/";
 
     public Mat loadMat(byte[] bytes) {
@@ -50,8 +48,8 @@ public class ImageService {
         return rotatedMat;
     }
 
-    public void markPosition(Mat mat, int x, int y, Scalar color) {
-        Rect rect = new Rect(x, y, 20, 20);
+    public void markPosition(Mat mat, int x, int y, Size size, Scalar color) {
+        Rect rect = new Rect(x, y, (int)size.width, (int)size.height);
         Imgproc.rectangle(mat, rect, color);
     }
 

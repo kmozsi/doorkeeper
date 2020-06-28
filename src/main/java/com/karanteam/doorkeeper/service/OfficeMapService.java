@@ -21,7 +21,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
 
-import static com.karanteam.doorkeeper.service.ImageService.YELLOw;
+import static com.karanteam.doorkeeper.enumeration.Color.YELLOw;
 
 @Service
 @Slf4j
@@ -106,7 +106,7 @@ public class OfficeMapService {
 
     public byte[] markPosition(OfficePosition position) throws IOException {
         Mat officeMat = imageService.readMat("original.jpg"); // TODO current office pic
-        imageService.markPosition(officeMat, position.getX(), position.getY(), YELLOw);
+        imageService.markPosition(officeMat, position.getX(), position.getY(), position.getOrientation().getSize(), YELLOw.getColor());
         return imageService.writeMatToImage(officeMat);
     }
 }
