@@ -51,7 +51,7 @@ public class BookingService {
             Booking nextBooking = getNextWaiting();
             bookingCacheService.exit(userId);
             if (nextBooking != null && nextBooking.getOfficePosition() == null) {
-                OfficePosition officePosition = officePositionService.getNextFreePosition(); // TODO max capacity
+                OfficePosition officePosition = officePositionService.getNextFreePosition();
                 nextBooking.setOfficePosition(officePosition);
                 bookingRepository.save(nextBooking);
             }
@@ -133,7 +133,7 @@ public class BookingService {
         return new StatusResponse().positionPicture(uri).position(calculatePosition(getWaitingBooking(userId)));
     }
 
-    private int calculatePosition(Booking user) { // TODO how do we handle when there is no free space by the office map? :/
+    private int calculatePosition(Booking user) {
         return bookingCacheService.calculatePositionFromOrdinal(user.getOrdinal());
     }
 
