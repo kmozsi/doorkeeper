@@ -78,6 +78,19 @@ public class BookingServiceTest {
 
     @Test
     public void callingExitWithRegularUser() {
+        when(vipService.isVip(anyString())).thenReturn(false);
+        when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
+
+        bookingService.exit(USER_ID);
+
+        verify(bookingCacheService, times(1)).exit(USER_ID);
+        verify(officePositionService, never()).getNextFreePosition();
+        verify(bookingRepository, never()).save(any());
+        verify(messagingService, never()).sendMessage(any());
+    }
+
+    @Test
+    public void callingExitWithRegularUserThenNotify() {
         List<Booking> bookings = new ArrayList<>();
         bookings.add(Booking.builder().ordinal(0).userId(USER_ID).build());
         bookings.add(Booking.builder().ordinal(1).userId(USER_ID2).build());
@@ -92,8 +105,6 @@ public class BookingServiceTest {
         bookingService.exit(USER_ID);
 
         verify(bookingCacheService, times(1)).exit(USER_ID);
-        verify(officePositionService, never()).getNextFreePosition();
-        verify(bookingRepository, never()).save(any());
         verify(messagingService, times(1)).sendMessage(USER_ID2);
     }
 
