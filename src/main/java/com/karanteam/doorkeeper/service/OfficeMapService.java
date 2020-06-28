@@ -30,6 +30,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OfficeMapService {
 
+    private final static String MAP_IMAGE = "original.jpg";
+    private final static String CHAIR_IMAGE = "chair_binary.png";
+
     private final OfficePositionService officePositionService;
     private final ImageService imageService;
     private final ApplicationConfig applicationConfig;
@@ -52,23 +55,28 @@ public class OfficeMapService {
     @PostConstruct
     public void init() throws IOException {
         OpenCV.loadShared();
-        storeOfficeAndPositions(Files.readAllBytes(imageService.readImage("original.jpg").toPath()));
+        storeImage(Image.CHAIR, readAllBytes(CHAIR_IMAGE));
+        storeOfficeAndPositions(readAllBytes(MAP_IMAGE));
     }
 
-    public int storeOfficeAndPositions(byte[] bytes) throws IOException {
-        storeNewOffice(bytes);
+    private byte[] readAllBytes(String imageName) throws IOException {
+        return Files.readAllBytes(imageService.readImage(imageName).toPath());
+    }
+
+    public int storeOfficeAndPositions(byte[] bytes) {
+        storeImage(Image.OFFICE, bytes);
         return storePositions(imageService.loadMat(bytes));
     }
 
-    private void storeNewOffice(byte[] content) {
-        Image office = imageRepository.findByKey(Image.OFFICE).orElse(new Image());
-        office.setKey(Image.OFFICE);
+    private void storeImage(String key, byte[] content) {
+        Image office = imageRepository.findByKey(key).orElse(new Image());
+        office.setKey(key);
         office.setContent(content);
         imageRepository.save(office);
     }
 
-    private int storePositions(Mat uploadedMat) throws IOException {
-        Mat chairMat = imageService.readMat("chair_binary.png");
+    private int storePositions(Mat uploadedMat) {
+        Mat chairMat = getCurrentMat(Image.CHAIR);
         Mat originalMat = uploadedMat.clone();
 
         Mat preparedOffice = prepareImage(uploadedMat);
@@ -86,8 +94,8 @@ public class OfficeMapService {
         return positionCount;
     }
 
-    public void recalculatePositions() throws IOException {
-        storePositions(getCurrentOfficeMat());
+    public void recalculatePositions() {
+        storePositions(getCurrentMat(Image.OFFICE));
     }
 
     public Mat findPositions(Mat preparedOffice, Mat preparedChair, int matchingThreshold) {
@@ -128,15 +136,15 @@ public class OfficeMapService {
         );
     }
 
-    private Mat getCurrentOfficeMat() {
-        Image office = imageRepository.findByKey(Image.OFFICE).orElseThrow(
-            () -> new RuntimeException("Cannot find office map!")
+    private Mat getCurrentMat(String imageKey) {
+        Image img = imageRepository.findByKey(imageKey).orElseThrow(
+            () -> new RuntimeException("Cannot find image with key " + imageKey)
         );
-        return imageService.loadMat(office.getContent());
+        return imageService.loadMat(img.getContent());
     }
 
     public byte[] markPosition(OfficePosition position) {
-        Mat officeMat = getCurrentOfficeMat();
+        Mat officeMat = getCurrentMat(Image.OFFICE);
         imageService.fillPosition(
             officeMat,
             position.getX(),
@@ -158,7 +166,7 @@ public class OfficeMapService {
     }
 
     public byte[] getLayout() {
-        Mat officeMat = getCurrentOfficeMat();
+        Mat officeMat = getCurrentMat(Image.OFFICE);
 
         List<OfficePosition> allPositions = officePositionService.getAllPositions();
         allPositions.forEach(

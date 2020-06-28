@@ -2,6 +2,7 @@ package com.karanteam.doorkeeper.controller;
 
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.Role;
+import com.karanteam.doorkeeper.exception.MapParsingException;
 import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.OfficeMapService;
@@ -43,12 +44,8 @@ public class OfficeController implements OfficeApi {
         if (bookingService.isThereActiveBooking()) {
             return ResponseEntity.badRequest().body("Cannot modify office map while there are active bookings!");
         }
-        try {
-            BigDecimal posCount = BigDecimal.valueOf(officeMapService.storeOfficeAndPositions(officeMap.getBytes()));
-            return ResponseEntity.ok(new PositionsResponse().message(posCount));
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        BigDecimal posCount = BigDecimal.valueOf(officeMapService.storeOfficeAndPositions(getBytes(officeMap)));
+        return ResponseEntity.ok(new PositionsResponse().message(posCount));
     }
 
     @Override
@@ -70,5 +67,13 @@ public class OfficeController implements OfficeApi {
         log.info("Received get layout call with userId: " + userId);
         byte[] content = officeMapService.getLayout();
         return ResponseEntity.ok(content);
+    }
+
+    private byte[] getBytes(MultipartFile officeMap) {
+        try {
+            return officeMap.getBytes();
+        } catch (IOException e) {
+            throw new MapParsingException();
+        }
     }
 }
