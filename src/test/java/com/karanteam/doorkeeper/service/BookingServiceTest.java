@@ -1,6 +1,9 @@
 package com.karanteam.doorkeeper.service;
 
+import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.entity.Booking;
+import com.karanteam.doorkeeper.entity.OfficePosition;
+import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
@@ -14,6 +17,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
+import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -35,9 +40,13 @@ public class BookingServiceTest {
     private BookingCacheService bookingCacheService;
 
     private static final Booking waitingBooking = Booking.builder()
-        .userId(USER_ID).ordinal(1).build();
+        .userId(USER_ID).ordinal(1).officePosition(
+            OfficePosition.builder().id(1).status(BOOKED).orientation(NORTH).x(1).y(1).build()
+        ).build();
     private static final Booking activeBooking = Booking.builder()
-        .userId(USER_ID).ordinal(1).entered(true).build();
+        .userId(USER_ID).ordinal(1).entered(true).officePosition(
+            OfficePosition.builder().id(1).status(BOOKED).orientation(NORTH).x(1).y(1).build()
+        ).build();
 
     @Test
     public void callingExitWithVipUser() {
@@ -100,9 +109,11 @@ public class BookingServiceTest {
 
         RegisterResponse response = bookingService.register(USER_ID);
 
-        verify(bookingRepository).save(Booking.builder().userId(USER_ID).build());
+        verify(bookingRepository).save(Booking.builder().userId(USER_ID).officePosition(
+            OfficePosition.builder().id(1).x(728).y(91).orientation(NORTH).status(BOOKED).build()
+        ).build());
 
-        Assertions.assertEquals(new RegisterResponse().canEnter(false).position(7), response);
+        Assertions.assertEquals(new RegisterResponse().canEnter(false).position(7).positionPicture("http://localhost/positions/1"), response);
     }
 
     @Test
@@ -117,7 +128,7 @@ public class BookingServiceTest {
 
         verify(bookingRepository, times(0)).save(any());
 
-        Assertions.assertEquals(new RegisterResponse().canEnter(false).position(7), response);
+        Assertions.assertEquals(new RegisterResponse().canEnter(false).position(7).positionPicture("http://localhost/positions/1"), response);
     }
 
     @Test
@@ -136,7 +147,7 @@ public class BookingServiceTest {
             .thenReturn(Optional.of(waitingBooking));
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(7);
         StatusResponse status = bookingService.status(USER_ID);
-        Assertions.assertEquals(new StatusResponse().position(7), status);
+        Assertions.assertEquals(new StatusResponse().position(7).positionPicture("http://localhost/positions/1"), status);
     }
 
     @Test
