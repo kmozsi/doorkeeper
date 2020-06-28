@@ -26,6 +26,7 @@ public class OfficePositionService {
     }
 
     public void setPositions(List<OfficePosition> officePositions) {
+        officePositionsRepository.deleteAll();
         officePositionsRepository.saveAll(officePositions);
     }
 
@@ -76,5 +77,9 @@ public class OfficePositionService {
     private boolean isDistanceAllowed(OfficePosition position, OfficePosition otherPosition) {
         return position.distanceFrom(otherPosition) * applicationConfig.getPixelSizeInCm()
             >= adminService.getActualMinimalDistance() * 100;
+    }
+
+    public List<OfficePosition> getAllPositions() {
+        return officePositionsRepository.findAll();
     }
 }

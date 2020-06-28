@@ -16,13 +16,11 @@ import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import nu.pattern.OpenCV;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
 
+import static com.karanteam.doorkeeper.enumeration.Color.RED;
 import static com.karanteam.doorkeeper.enumeration.Color.YELLOW;
 
 @Service
@@ -33,6 +31,7 @@ public class OfficeMapService {
     private final ImageService imageService;
     private final ApplicationConfig applicationConfig;
     private final ImageRepository imageRepository;
+    private final ImageProcessingConfiguration imageProcessingConfiguration;
 
     public OfficeMapService(
         OfficePositionService officePositionService,
@@ -42,6 +41,7 @@ public class OfficeMapService {
         this.imageService = imageService;
         this.applicationConfig = applicationConfig;
         this.imageRepository = imageRepository;
+        this.imageProcessingConfiguration = applicationConfig.getImage();
     }
 
     @PostConstruct
@@ -115,16 +115,47 @@ public class OfficeMapService {
         );
     }
 
-    public byte[] markPosition(OfficePosition position) {
-        Mat officeMat = getCurrentOfficeMat();
-        imageService.markPosition(officeMat, position.getX(), position.getY(), position.getOrientation().getSize(), YELLOW.getColor());
-        return imageService.writeMatToImage(officeMat);
-    }
-
     private Mat getCurrentOfficeMat() {
         Image office = imageRepository.findByKey(Image.OFFICE).orElseThrow(
             () -> new RuntimeException("Cannot find office map!")
         );
         return imageService.loadMat(office.getContent());
+    }
+
+    public byte[] markPosition(OfficePosition position) {
+        Mat officeMat = getCurrentOfficeMat();
+        imageService.markPosition(
+            officeMat,
+            position.getX(),
+            position.getY(),
+            position.getOrientation().getSize(),
+            YELLOW.getColor()
+        );
+        return imageService.writeMatToImage(officeMat);
+    }
+
+    public byte[] getLayout() {
+        Mat officeMat = getCurrentOfficeMat();
+
+        List<OfficePosition> allPositions = officePositionService.getAllPositions();
+        allPositions.forEach(
+            position -> fillWithColor(
+                officeMat, position.getX(), position.getY(), position.getOrientation().getSize(), position.getStatus().getColor()
+            )
+        );
+
+        return imageService.writeMatToImage(officeMat);
+    }
+
+
+    private void fillWithColor(Mat mat, int x, int y, Size size, Color color) {
+        if (color != null) {
+            imageService.fillPosition(
+                mat, x, y, size, color.getColor(),
+                imageProcessingConfiguration.getColoringThreshold(),
+                imageProcessingConfiguration.getColoringThresholdMethod(),
+                imageProcessingConfiguration.getColoringMaxValue()
+            );
+        }
     }
 }

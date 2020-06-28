@@ -1,5 +1,6 @@
 package com.karanteam.doorkeeper.controller;
 
+import com.karanteam.doorkeeper.enumeration.Role;
 import com.karanteam.doorkeeper.service.ImageProcessingTuningService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,25 @@ public class ImageProcessingTuningController {
         @RequestParam(required = false, defaultValue = "4000000")  int matchingThreshold
     ) throws IOException {
         return ResponseEntity.ok(imageProcessingTuningService.findPositions(gray, threshold, maxValue, threshMethod, matchingThreshold));
+    }
+
+    @GetMapping(
+        value = "/coloring",
+        produces = MediaType.IMAGE_PNG_VALUE
+    )
+    public ResponseEntity<byte[]> getLayout(
+        @RequestParam(required = false, defaultValue = "true") boolean justMask,
+        @RequestParam(required = false, defaultValue = "216")  int threshold,
+        @RequestParam(required = false, defaultValue = "1000")  int max,
+        @RequestParam(required = false, defaultValue = "0")  int proc,
+        @RequestParam(required = false, defaultValue = "4000000")  int matchingThreshold
+    ) {
+        try {
+            byte[] content =  imageProcessingTuningService.getLayout(threshold, proc, max, justMask);
+            return ResponseEntity.ok(content);
+        } catch (IOException e) {
+            return (ResponseEntity<byte[]>) ResponseEntity.badRequest();
+        }
     }
 
 //    @PostMapping(value = "/uploadOfficeMap")

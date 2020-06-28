@@ -56,4 +56,12 @@ public class OfficeController implements OfficeApi {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @Override
+    public ResponseEntity<byte[]> getLayout(String xToken) {
+        String userId = jwtService.parseToken(xToken, Role.HR);
+        log.info("Received get layout call with userId: " + userId);
+        byte[] content =  officeMapService.getLayout();
+        return ResponseEntity.ok(content);
+    }
 }

@@ -9,4 +9,8 @@ public class ImageProcessingConfiguration {
     private Integer maxValue;
     private Integer thresholdMethod;
     private Integer matchingThreshold;
+
+    private Integer coloringThreshold;
+    private Integer coloringThresholdMethod;
+    private Integer coloringMaxValue;
 }

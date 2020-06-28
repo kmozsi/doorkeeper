@@ -19,6 +19,9 @@ application:
     maxValue: 1000
     thresholdMethod: 0
     matchingThreshold: 4000000
+    coloringThreshold: 200
+    coloringThresholdMethod: 0
+    coloringMaxValue: 255
 messaging:
   topic: entry-notification
   serverLocation: localhost:9092
