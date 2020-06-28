@@ -26,7 +26,7 @@ import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = BookingService.class)
 public class BookingServiceTest {
 
     private static final String USER_ID = "USER_ID";
@@ -110,6 +110,7 @@ public class BookingServiceTest {
 
     @Test
     public void callingExitWithRegularUserAndSomeoneWaiting() {
+        when(messagingConfig.getNotifyPosition()).thenReturn(1);
         when(vipService.isVip(anyString())).thenReturn(false);
         when(bookingRepository.findAll()).thenReturn(Collections.singletonList(waitingForPositionBooking));
         when(officePositionService.getNextFreePosition()).thenReturn(FREE_POSITION);

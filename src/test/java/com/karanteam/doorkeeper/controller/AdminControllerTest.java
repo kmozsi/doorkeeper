@@ -1,17 +1,17 @@
 package com.karanteam.doorkeeper.controller;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.karanteam.doorkeeper.exception.EntryForbiddenException;
-import com.karanteam.doorkeeper.exception.EntryNotFoundException;
+import com.karanteam.doorkeeper.exception.GlobalExceptionHandler;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.AdminService;
-import org.junit.jupiter.api.BeforeEach;
+import com.karanteam.doorkeeper.service.OfficeMapService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -19,8 +19,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {GlobalExceptionHandler.class, AdminController.class})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class AdminControllerTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
@@ -34,12 +35,10 @@ public class AdminControllerTest {
     private AdminService adminService;
 
     @MockBean
-    private JwtService jwtService;
+    private OfficeMapService officeMapService;
 
-    @BeforeEach
-    public void init() {
-        clearInvocations();
-    }
+    @MockBean
+    private JwtService jwtService;
 
     @Test
     public void setCapacityFailsBecauseTokenIsInvalid() throws Exception {
@@ -65,5 +64,6 @@ public class AdminControllerTest {
             .andExpect(status().isOk());
 
         verify(adminService, times(1)).setCapacity(any());
+        verify(officeMapService, times(1)).recalculatePositions();
     }
 }

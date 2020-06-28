@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.karanteam.doorkeeper.exception.GlobalExceptionHandler;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.VipService;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@SpringBootTest
+@SpringBootTest(classes = {GlobalExceptionHandler.class, VipController.class})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class VipControllerTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
