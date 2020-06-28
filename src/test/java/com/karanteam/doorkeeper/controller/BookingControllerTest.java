@@ -190,31 +190,4 @@ public class BookingControllerTest {
         verify(bookingService, times(1)).exit(USER_ID);
         verifyNoMoreInteractions(bookingService);
     }
-
-    @Test
-    public void setCapacityFailsBecauseTokenIsInvalid() throws Exception {
-        when(jwtService.parseToken(matches(TOKEN), any())).thenThrow(new JWTVerificationException(""));
-
-        mockMvc.perform(patch("/capacity")
-            .contentType(APPLICATION_JSON)
-            .content("{\"capacity\": 1, \"percentage\": 1}")
-            .header(HEADER_TOKEN_NAME, TOKEN))
-            .andExpect(status().isForbidden());
-
-        verify(adminService, never()).setCapacity(any());
-    }
-
-    @Test
-    public void setCapacitySuccessfullyProcessed() throws Exception {
-        when(jwtService.parseToken(matches(TOKEN), any())).thenReturn(USER_ID);
-
-        mockMvc.perform(patch("/capacity")
-            .contentType(APPLICATION_JSON)
-            .content("{\"capacity\": 1, \"percentage\": 1}")
-            .header(HEADER_TOKEN_NAME, TOKEN))
-            .andExpect(status().isOk());
-
-        verify(adminService, times(1)).setCapacity(any());
-        verifyNoMoreInteractions(adminService);
-    }
 }

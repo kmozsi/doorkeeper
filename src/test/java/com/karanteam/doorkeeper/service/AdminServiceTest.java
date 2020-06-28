@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,7 +59,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void setCapacityWhenAlreadyExist() {
+    public void setCapacityWhenAlreadyExist() throws IOException {
         int newCapacity = 500;
         int newPercentage = 50;
         int newDistance = 1;
@@ -79,7 +80,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void setCapacityWhenEntryDoesNotExist() {
+    public void setCapacityWhenEntryDoesNotExist() throws IOException {
         int newCapacity = 500;
         int newPercentage = 50;
         int newDistance = 1;

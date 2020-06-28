@@ -44,7 +44,7 @@ public class OfficeController implements OfficeApi {
             return ResponseEntity.badRequest().body("Cannot modify office map while there are active bookings!");
         }
         try {
-            BigDecimal posCount = BigDecimal.valueOf(officeMapService.storePositions(officeMap.getBytes()));
+            BigDecimal posCount = BigDecimal.valueOf(officeMapService.storeOfficeAndPositions(officeMap.getBytes()));
             return ResponseEntity.ok(new PositionsResponse().message(posCount));
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
