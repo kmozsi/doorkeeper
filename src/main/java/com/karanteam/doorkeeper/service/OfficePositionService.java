@@ -38,16 +38,24 @@ public class OfficePositionService {
     }
 
     private List<OfficePosition> filterAvailablePositions(List<OfficePosition> allPositions) {
+//        allPositions.stream()
+
+
 //        return positionOptimalizationService.getOptimalPositionDistribution(50, allPositions.subList(0,20));
-         return allPositions;  // TODO !!!
-//        List<OfficePosition> availablePositions = new ArrayList<>();
-//
-//        allPositions.forEach(pos -> {
-//            if (availablePositions.stream().allMatch(available -> isDistanceAllowed(pos, available))) {
-//                availablePositions.add(pos);
-//            }
-//        });
-//        return availablePositions;
+//         return allPositions;  // TODO !!!
+
+        List<OfficePosition> availablePositions = new ArrayList<>();
+
+        allPositions.forEach(pos -> {
+            if (availablePositions.stream().allMatch(available -> isDifferentPosition(pos, available))) {
+                availablePositions.add(pos);
+            }
+        });
+        return availablePositions;
+    }
+
+    private boolean isDifferentPosition(OfficePosition pos, OfficePosition available) {
+        return pos.distanceFrom(available) > 10;
     }
 
     public Optional<OfficePosition> findById(final Integer positionId) {

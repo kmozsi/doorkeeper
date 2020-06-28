@@ -33,12 +33,12 @@ public class PositionOptimalizationServiceTest {
     @Test
     public void optimalDistributionShouldFound() {
         List<OfficePosition> allPositions = officePositionService.getAllPositions();
-        Assertions.assertEquals(280, allPositions.size());
+        Assertions.assertEquals(189, allPositions.size());
 
         List<OfficePosition> optimalPositionDistribution = positionOptimalizationService
             .getOptimalPositionDistribution(
                 50,
-                allPositions.subList(0,20)
+                allPositions.subList(0,180)
             );
 
         Assertions.assertEquals(42, optimalPositionDistribution.size());
