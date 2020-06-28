@@ -1,12 +1,25 @@
 package com.karanteam.doorkeeper.service;
 
-import com.karanteam.doorkeeper.data.OfficePositionOrientation;
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
+import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
+import java.util.Collections;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.RegisterResponse;
@@ -14,13 +27,6 @@ import org.openapitools.model.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.util.Optional;
-
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
-import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class BookingServiceTest {
@@ -37,12 +43,23 @@ public class BookingServiceTest {
     private BookingRepository bookingRepository;
 
     @MockBean
+    private OfficePositionService officePositionService;
+
+    @MockBean
+    private MessagingService messagingService;
+
+    @MockBean
     private BookingCacheService bookingCacheService;
+
+    private static final OfficePosition FREE_POSITION = OfficePosition.builder()
+        .id(1).orientation(NORTH).status(PositionStatus.FREE).build();
 
     private static final Booking waitingBooking = Booking.builder()
         .userId(USER_ID).ordinal(1).officePosition(
             OfficePosition.builder().id(1).status(BOOKED).orientation(NORTH).x(1).y(1).build()
         ).build();
+    private static final Booking waitingForPositionBooking = Booking.builder()
+        .userId(USER_ID).ordinal(1).build();
     private static final Booking activeBooking = Booking.builder()
         .userId(USER_ID).ordinal(1).entered(true).officePosition(
             OfficePosition.builder().id(1).status(BOOKED).orientation(NORTH).x(1).y(1).build()
@@ -60,10 +77,28 @@ public class BookingServiceTest {
     @Test
     public void callingExitWithRegularUser() {
         when(vipService.isVip(anyString())).thenReturn(false);
+        when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
 
         bookingService.exit(USER_ID);
 
         verify(bookingCacheService, times(1)).exit(USER_ID);
+        verify(officePositionService, never()).getNextFreePosition();
+        verify(bookingRepository, never()).save(any());
+        verify(messagingService, never()).sendMessage(any());
+    }
+
+    @Test
+    public void callingExitWithRegularUserAndSomeoneWaiting() {
+        when(vipService.isVip(anyString())).thenReturn(false);
+        when(bookingRepository.findAll()).thenReturn(Collections.singletonList(waitingForPositionBooking));
+        when(officePositionService.getNextFreePosition()).thenReturn(FREE_POSITION);
+
+        bookingService.exit(USER_ID);
+
+        verify(bookingCacheService, times(1)).exit(USER_ID);
+        verify(officePositionService).getNextFreePosition();
+        verify(bookingRepository).save(argThat(booking -> booking.getOfficePosition().equals(FREE_POSITION)));
+        verify(messagingService, never()).sendMessage(any());
     }
 
     @Test
@@ -90,6 +125,7 @@ public class BookingServiceTest {
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(0);
         bookingService.entry(USER_ID);
         verify(bookingRepository).save(activeBooking);
+        verify(officePositionService).enter(activeBooking.getOfficePosition());
     }
 
     @Test
@@ -106,11 +142,12 @@ public class BookingServiceTest {
         when(bookingRepository.findByEnteredAndUserId(false, USER_ID)).thenReturn(Optional.empty());
         when(bookingRepository.save(any())).thenReturn(waitingBooking);
         when(bookingCacheService.calculatePositionFromOrdinal(anyInt())).thenReturn(7);
+        when(officePositionService.getNextFreePosition()).thenReturn(FREE_POSITION);
 
         RegisterResponse response = bookingService.register(USER_ID);
 
         verify(bookingRepository).save(Booking.builder().userId(USER_ID).officePosition(
-            OfficePosition.builder().id(1).x(728).y(91).orientation(NORTH).status(BOOKED).build()
+            FREE_POSITION
         ).build());
 
         Assertions.assertEquals(new RegisterResponse().canEnter(false).position(7).positionPicture("http://localhost/positions/1"), response);
