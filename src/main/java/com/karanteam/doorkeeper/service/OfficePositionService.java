@@ -59,7 +59,6 @@ public class OfficePositionService {
     private void changeStatus(final OfficePosition officePosition, final PositionStatus status) {
         officePosition.setStatus(status);
         officePositionsRepository.save(officePosition);
-        // TODO modify the picture of the actual status
     }
 
     public synchronized OfficePosition getNextFreePosition() {

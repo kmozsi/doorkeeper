@@ -50,7 +50,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"capacity\": \"100\",\n    \"percentage\": \"10\"\n}",
+					"raw": "{\n    \"capacity\": 100,\n    \"percentage\": 10,\n    \"minimalDistance\": 5\n}",
 					"options": {
 						"raw": {}
 					}

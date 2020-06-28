@@ -6,6 +6,7 @@ import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
@@ -17,6 +18,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
+import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.OfficeMapService;
 import com.karanteam.doorkeeper.service.OfficePositionService;
@@ -49,6 +51,9 @@ public class OfficeControllerTest {
     private OfficePositionService officePositionService;
 
     @MockBean
+    private BookingService bookingService;
+
+    @MockBean
     private JwtService jwtService;
 
     @Test
@@ -67,6 +72,7 @@ public class OfficeControllerTest {
     @Test
     public void setPositionsSuccessfullyProcessed() throws Exception {
         when(jwtService.parseToken(matches(TOKEN), any())).thenReturn(USER_ID);
+        when(bookingService.isThereActiveBooking()).thenReturn(false);
 
         mockMvc.perform(multipart("/positions")
             .file(new MockMultipartFile("officeMap", "filename.txt", "text/plain", "some xml".getBytes()))
@@ -76,6 +82,20 @@ public class OfficeControllerTest {
 
         verify(officeMapService, times(1)).storeOfficeAndPositions(any());
         verifyNoMoreInteractions(officeMapService);
+    }
+
+    @Test
+    public void setPositionsFailsBecauseThereAreActiveBookings() throws Exception {
+        when(jwtService.parseToken(matches(TOKEN), any())).thenReturn(USER_ID);
+        when(bookingService.isThereActiveBooking()).thenReturn(true);
+
+        mockMvc.perform(multipart("/positions")
+            .file(new MockMultipartFile("officeMap", "filename.txt", "text/plain", "some xml".getBytes()))
+            .contentType(MULTIPART_FORM_DATA)
+            .header(HEADER_TOKEN_NAME, TOKEN))
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(officeMapService);
     }
 
     @Test
