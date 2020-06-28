@@ -17,13 +17,17 @@ public class OfficePositionService {
     private final OfficePositionsRepository officePositionsRepository;
     private final ApplicationConfig applicationConfig;
     private final AdminService adminService;
+    private final PositionOptimalizationService positionOptimalizationService;
 
     public OfficePositionService(
         OfficePositionsRepository officePositionsRepository,
-        ApplicationConfig applicationConfig, AdminService adminService) {
+        ApplicationConfig applicationConfig, AdminService adminService,
+        PositionOptimalizationService positionOptimalizationService
+    ) {
         this.officePositionsRepository = officePositionsRepository;
         this.applicationConfig = applicationConfig;
         this.adminService = adminService;
+        this.positionOptimalizationService = positionOptimalizationService;
     }
 
     public int setPositions(List<OfficePosition> officePositions) {
@@ -34,14 +38,16 @@ public class OfficePositionService {
     }
 
     private List<OfficePosition> filterAvailablePositions(List<OfficePosition> allPositions) {
-        List<OfficePosition> availablePositions = new ArrayList<>();
-
-        allPositions.forEach(pos -> {
-            if (availablePositions.stream().allMatch(available -> isDistanceAllowed(pos, available))) {
-                availablePositions.add(pos);
-            }
-        });
-        return availablePositions;
+//        return positionOptimalizationService.getOptimalPositionDistribution(50, allPositions.subList(0,20));
+         return allPositions;  // TODO !!!
+//        List<OfficePosition> availablePositions = new ArrayList<>();
+//
+//        allPositions.forEach(pos -> {
+//            if (availablePositions.stream().allMatch(available -> isDistanceAllowed(pos, available))) {
+//                availablePositions.add(pos);
+//            }
+//        });
+//        return availablePositions;
     }
 
     public Optional<OfficePosition> findById(final Integer positionId) {

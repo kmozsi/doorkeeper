@@ -92,7 +92,7 @@ public class OfficeMapService {
         return positions;
     }
 
-    private List<OfficePosition> readFreePositions(Mat originalMat, Mat positions, OfficePositionOrientation officePositionOrientation) {
+    public List<OfficePosition> readFreePositions(Mat originalMat, Mat positions, OfficePositionOrientation officePositionOrientation) {
         final List<OfficePosition> officePositions = new ArrayList<>();
         IntStream.range(0, (int)positions.size().height).forEach(
             index -> {

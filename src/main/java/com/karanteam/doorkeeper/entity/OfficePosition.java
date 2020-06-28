@@ -33,8 +33,8 @@ public class OfficePosition {
     }
 
     public double distanceFrom(OfficePosition other) {
-        double ac = Math.abs(y - other.y);
-        double cb = Math.abs(x - other.x);
+        double ac = Math.abs(getCenterY() - other.getCenterY());
+        double cb = Math.abs(getCenterX() - other.getCenterX());
         return Math.hypot(ac, cb);
     }
 
