@@ -2,19 +2,19 @@ package com.karanteam.doorkeeper.controller;
 
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.Role;
-import com.karanteam.doorkeeper.service.OfficeMapService;
 import com.karanteam.doorkeeper.service.JwtService;
+import com.karanteam.doorkeeper.service.OfficeMapService;
 import com.karanteam.doorkeeper.service.OfficePositionService;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.OfficeApi;
 import org.openapitools.model.PositionsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.math.BigDecimal;
 
 @Controller
 @Slf4j
@@ -50,12 +50,8 @@ public class OfficeController implements OfficeApi {
         log.info("Received get position call with userId: " + userId);
         Optional<OfficePosition> position = officePositionService.findById(id);
         if (position.isPresent()) {
-            try {
-                byte[] content =  officeMapService.markPosition(position.get());
-                return ResponseEntity.ok(content);
-            } catch (IOException e) {
-                return (ResponseEntity<byte[]>) ResponseEntity.badRequest();
-            }
+            byte[] content =  officeMapService.markPosition(position.get());
+            return ResponseEntity.ok(content);
         } else {
             return ResponseEntity.notFound().build();
         }
