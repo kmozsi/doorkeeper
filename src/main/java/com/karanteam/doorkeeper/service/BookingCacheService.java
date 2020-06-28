@@ -46,7 +46,7 @@ public class BookingCacheService {
         Booking userInBuilding = getActiveBooking(userId);
         userInBuilding.setExited(true);
         bookingRepository.save(userInBuilding);
-        officePositionService.exit(userInBuilding.getOfficePosition().getId());
+        officePositionService.exit(userInBuilding.getOfficePosition());
     }
 
     private Booking getActiveBooking(String userId) {
