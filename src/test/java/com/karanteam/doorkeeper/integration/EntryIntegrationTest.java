@@ -1,6 +1,5 @@
 package com.karanteam.doorkeeper.integration;
 
-import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.entity.OfficeCapacity;
 import com.karanteam.doorkeeper.repository.BookingRepository;
 import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
@@ -12,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ public class EntryIntegrationTest {
 
     private static final String USER_1_X_TOKEN = "TEST";
     private static final String USER_2_X_TOKEN = "TEST2";
+    private static final String USER_3_X_TOKEN = "TEST3";
     private static final String USER_4_X_TOKEN = "TEST4";
     private static final String USER_1_ID = "uid";
     private static final String USER_2_ID = "uid2";
@@ -48,7 +50,7 @@ public class EntryIntegrationTest {
     private JwtService jwtService;
 
     @BeforeEach
-    public void deleteTables() {
+    public void deleteTables() throws IOException {
         bookingRepository.deleteAll();
         officeCapacityRepository.deleteAll();
     }
@@ -62,25 +64,25 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0,\"positionPicture\":\"http://localhost/positions/1\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
+            .andExpect(content().string("{\"position\":0,\"positionPicture\":\"http://localhost/positions/1\"}"));
 
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0,\"positionPicture\":\"http://localhost/positions/7\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
+            .andExpect(content().string("{\"position\":0,\"positionPicture\":\"http://localhost/positions/7\"}"));
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
@@ -109,13 +111,13 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1,\"positionPicture\":\"http://localhost/positions/13\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":1}"));
+            .andExpect(content().string("{\"position\":1,\"positionPicture\":\"http://localhost/positions/13\"}"));
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
@@ -136,25 +138,25 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1,\"positionPicture\":\"http://localhost/positions/13\"}"));
 
         mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":false,\"position\":2}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":2,\"positionPicture\":\"http://localhost/positions/15\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":1}"));
+            .andExpect(content().string("{\"position\":1,\"positionPicture\":\"http://localhost/positions/13\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":2}"));
+            .andExpect(content().string("{\"position\":2,\"positionPicture\":\"http://localhost/positions/15\"}"));
 
         mockMvc.perform(post("/exit")
             .contentType(APPLICATION_JSON)
@@ -165,13 +167,13 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
+            .andExpect(content().string("{\"position\":0,\"positionPicture\":\"http://localhost/positions/13\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_4_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":1}"));
+            .andExpect(content().string("{\"position\":1,\"positionPicture\":\"http://localhost/positions/15\"}"));
     }
 
     @Test
@@ -183,13 +185,13 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0,\"positionPicture\":\"http://localhost/positions/1\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
+            .andExpect(content().string("{\"position\":0,\"positionPicture\":\"http://localhost/positions/1\"}"));
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
@@ -210,13 +212,13 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0,\"positionPicture\":\"http://localhost/positions/1\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":0}"));
+            .andExpect(content().string("{\"position\":0,\"positionPicture\":\"http://localhost/positions/1\"}"));
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
@@ -241,7 +243,7 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_1_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":true,\"position\":0}"));
+            .andExpect(content().string("{\"canEnter\":true,\"position\":0,\"positionPicture\":\"http://localhost/positions/7\"}"));
 
         mockMvc.perform(post("/entry")
             .contentType(APPLICATION_JSON)
@@ -252,13 +254,13 @@ public class EntryIntegrationTest {
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"canEnter\":false,\"position\":1}"));
+            .andExpect(content().string("{\"canEnter\":false,\"position\":1,\"positionPicture\":\"http://localhost/positions/13\"}"));
 
         mockMvc.perform(get("/status")
             .contentType(APPLICATION_JSON)
             .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
             .andExpect(status().isOk())
-            .andExpect(content().string("{\"position\":1}"));
+            .andExpect(content().string("{\"position\":1,\"positionPicture\":\"http://localhost/positions/13\"}"));
     }
 
     @Test
@@ -275,8 +277,28 @@ public class EntryIntegrationTest {
         officeCapacityRepository.save(OfficeCapacity.of(1, 10, 20, 5));
     }
 
-    private void thereAreTwoEmployeeInTheBuilding() {
-        bookingRepository.save(Booking.builder().userId(USER_2_ID).entered(true).build());
-        bookingRepository.save(Booking.builder().userId(USER_3_ID).entered(true).build());
+    private void thereAreTwoEmployeeInTheBuilding() throws Exception {
+        when(jwtService.parseToken(matches(USER_3_X_TOKEN), any())).thenReturn(USER_3_ID);
+        when(jwtService.parseToken(matches(USER_2_X_TOKEN), any())).thenReturn(USER_2_ID);
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_3_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_3_X_TOKEN))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/entry")
+            .contentType(APPLICATION_JSON)
+            .header(HEADER_TOKEN_NAME, USER_2_X_TOKEN))
+            .andExpect(status().isOk());
     }
 }

@@ -8,6 +8,8 @@ import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
 import java.net.URI;
 import java.util.Optional;
+
+import org.apache.kafka.common.metrics.Stat;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.stereotype.Service;
@@ -110,11 +112,12 @@ public class BookingService {
      * @return @StatusResponse
      */
     public StatusResponse status(String userId) {
+        if (vipService.isVip(userId)) {
+            return new StatusResponse().position(0);
+        }
         Booking booking = getWaitingBooking(userId);
         String uri = getURIForPosition(booking.getOfficePosition());
-        return new StatusResponse().positionPicture(uri).position(
-            vipService.isVip(userId) ? 0 : calculatePosition(getWaitingBooking(userId))
-        );
+        return new StatusResponse().positionPicture(uri).position(calculatePosition(getWaitingBooking(userId)));
     }
 
     private int calculatePosition(Booking user) { // TODO how do we handle when there is no free space by the office map? :/
