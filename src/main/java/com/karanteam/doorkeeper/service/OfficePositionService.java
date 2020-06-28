@@ -33,19 +33,17 @@ public class OfficePositionService {
         return officePositionsRepository.findById(positionId);
     }
 
-    public void enter(final Integer id) {
-        changeStatus(id, PositionStatus.TAKEN);
+    public void enter(final OfficePosition officePosition) {
+        changeStatus(officePosition, PositionStatus.TAKEN);
     }
 
-    public void exit(final Integer id) {
-        changeStatus(id, PositionStatus.FREE);
+    public void exit(final OfficePosition officePosition) {
+        changeStatus(officePosition, PositionStatus.FREE);
     }
 
-    private void changeStatus(final Integer id, final PositionStatus status) {
-        officePositionsRepository.findById(id).ifPresent(pos -> {
-            pos.setStatus(status);
-            officePositionsRepository.save(pos);
-        });
+    private void changeStatus(final OfficePosition officePosition, final PositionStatus status) {
+        officePosition.setStatus(status);
+        officePositionsRepository.save(officePosition);
         // TODO modify the picture of the actual status
     }
 

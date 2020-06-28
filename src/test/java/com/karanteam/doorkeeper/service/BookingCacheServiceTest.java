@@ -39,6 +39,9 @@ public class BookingCacheServiceTest {
     private BookingRepository bookingRepository;
 
     @MockBean
+    private OfficePositionService officePositionService;
+
+    @MockBean
     private AdminService adminService;
 
     private static final Booking activeBooking = Booking.builder()
@@ -145,6 +148,7 @@ public class BookingCacheServiceTest {
             .thenReturn(Optional.of(activeBooking));
         bookingService.exit(USER_ID);
         verify(bookingRepository).save(closedBooking);
+        verify(officePositionService).exit(closedBooking.getOfficePosition());
     }
 
 }

@@ -7,15 +7,12 @@ import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.Optional;
-
-import org.apache.kafka.common.metrics.Stat;
 import org.openapitools.model.RegisterResponse;
 import org.openapitools.model.StatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.util.Optional;
 
 /**
  * Service for office booking functions.
@@ -47,9 +44,21 @@ public class BookingService {
 
     public void exit(String userId) {
         if (!vipService.isVip(userId)) {
+            Booking nextBooking = getNextWaiting();
             bookingCacheService.exit(userId);
+            if (nextBooking != null && nextBooking.getOfficePosition() == null) {
+                OfficePosition officePosition = officePositionService.getNextFreePosition(); // TODO max capacity
+                nextBooking.setOfficePosition(officePosition);
+                bookingRepository.save(nextBooking);
+            }
             notifyCanEnterSoon();
         }
+    }
+
+    private Booking getNextWaiting() {
+        return bookingRepository.findAll().stream()
+            .filter(booking -> booking.getOfficePosition() == null)
+            .min(Comparator.comparing(Booking::getOrdinal)).orElse(null);
     }
 
     private void notifyCanEnterSoon() {
@@ -68,7 +77,7 @@ public class BookingService {
             }
             waitingBooking.setEntered(true);
             bookingRepository.save(waitingBooking);
-            officePositionService.enter(waitingBooking.getOfficePosition().getId());
+            officePositionService.enter(waitingBooking.getOfficePosition());
         }
     }
 
