@@ -39,12 +39,8 @@ public class AdminController implements AdminApi {
     public ResponseEntity<Void> setCapacity(String xToken, CapacityBody capacityBody) {
         String userId = jwtService.parseToken(xToken, Role.EMPLOYEE, Role.HR);
         log.info("Received set capacity call with userId: " + userId);
-        try {
-            adminService.setCapacity(capacityBody);
-            officeMapService.recalculatePositions();
-            return ResponseEntity.ok().build();
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        adminService.setCapacity(capacityBody);
+        officeMapService.recalculatePositions();
+        return ResponseEntity.ok().build();
     }
 }

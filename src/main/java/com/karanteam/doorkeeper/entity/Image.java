@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class Image {
 
     public static final String OFFICE = "OFFICE";
+    public static final String CHAIR = "CHAIR";
 
     @Id
     @GeneratedValue
