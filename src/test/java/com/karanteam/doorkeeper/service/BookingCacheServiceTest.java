@@ -1,12 +1,19 @@
 package com.karanteam.doorkeeper.service;
 
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
+import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
+import static com.karanteam.doorkeeper.enumeration.PositionStatus.FREE;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.karanteam.doorkeeper.config.CachingConfig;
+import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.entity.Booking;
+import com.karanteam.doorkeeper.entity.OfficePosition;
+import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
 import java.util.Optional;
@@ -15,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 
 @SpringBootTest
 public class BookingCacheServiceTest {
@@ -31,17 +39,26 @@ public class BookingCacheServiceTest {
     private BookingRepository bookingRepository;
 
     @MockBean
+    private OfficePositionService officePositionService;
+
+    @MockBean
     private AdminService adminService;
 
     private static final Booking activeBooking = Booking.builder()
-        .userId(USER_ID).ordinal(1).entered(true).build();
+        .userId(USER_ID).ordinal(1).entered(true).officePosition(
+            OfficePosition.builder().id(1).orientation(NORTH).x(1).y(1).status(BOOKED).build()
+        ).build();
     private static final Booking closedBooking = Booking.builder()
-        .userId(USER_ID).ordinal(1).entered(true).exited(true).build();
+        .userId(USER_ID).ordinal(1).entered(true).exited(true).officePosition(
+            OfficePosition.builder().id(1).orientation(NORTH).x(1).y(1).status(BOOKED).build()
+        ).build();
+
+    @Autowired
+    CacheManager cacheManager;
 
     private void evictCache() {
-        when(bookingRepository.findByExitedAndEnteredAndUserId(anyBoolean(), anyBoolean(), anyString()))
-            .thenReturn(Optional.of(activeBooking));
-        bookingService.exit(USER_ID);
+        cacheManager.getCache(CachingConfig.POSITION_CACHE).clear();
+        cacheManager.getCache(CachingConfig.VIP_CACHE).clear();
     }
 
     @Test
@@ -131,6 +148,7 @@ public class BookingCacheServiceTest {
             .thenReturn(Optional.of(activeBooking));
         bookingService.exit(USER_ID);
         verify(bookingRepository).save(closedBooking);
+        verify(officePositionService).exit(closedBooking.getOfficePosition());
     }
 
 }

@@ -280,6 +280,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /positions/{id}:
+    get:
+      summary: Get representation of position
+      operationId: getPosition
+      tags:
+        - office
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Done
+          content:
+            image/png:
+              schema:
+                type: string
+                format: byte
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /positions:
     post:
       summary: Set positions by uploading map
@@ -320,6 +357,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /layout:
+    get:
+      summary: get layout
+      operationId: getLayout
+      tags:
+        - office
+      parameters:
+        - in: header
+          name: X-Token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: The layout
+          content:
+            image/png:
+              schema:
+                type: string
+                format: byte
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     RegisterResponse:
@@ -332,6 +401,8 @@ components:
         position:
           type: integer
           format: int32
+        positionPicture:
+          type: string
     StatusResponse:
       type: object
       required:
@@ -340,6 +411,8 @@ components:
         position:
           type: integer
           format: int32
+        positionPicture:
+          type: string
     CapacityBody:
       type: object
       properties:
