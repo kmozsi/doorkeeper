@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.repository.OfficePositionsRepository;
@@ -14,12 +15,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
-@SpringBootTest(properties = { "application.pixelSizeInCm=10" })
+@SpringBootTest(classes = OfficePositionService.class)
 public class OfficePositionServiceTest {
 
     private static final OfficePosition TAKEN = OfficePosition.builder()
@@ -51,6 +54,14 @@ public class OfficePositionServiceTest {
 
     @MockBean
     private AdminService adminService;
+
+    @SpyBean
+    private ApplicationConfig applicationConfig;
+
+    @BeforeEach
+    private void init() {
+        when(applicationConfig.getPixelSizeInCm()).thenReturn(10);
+    }
 
     @Test
     public void imageProcessingFoundAllPositionAndStoreIt() {

@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = MessagingService.class)
 public class MessagingServiceTest {
 
     private static final String MESSAGE = "MESSAGE";

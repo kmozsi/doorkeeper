@@ -2,7 +2,6 @@ package com.karanteam.doorkeeper.service;
 
 import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
 import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
-import static com.karanteam.doorkeeper.enumeration.PositionStatus.FREE;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -10,10 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.karanteam.doorkeeper.config.CachingConfig;
-import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.entity.OfficePosition;
-import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
 import com.karanteam.doorkeeper.repository.BookingRepository;
 import java.util.Optional;

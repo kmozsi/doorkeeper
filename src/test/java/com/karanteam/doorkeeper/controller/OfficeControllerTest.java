@@ -18,6 +18,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
+import com.karanteam.doorkeeper.exception.GlobalExceptionHandler;
 import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.OfficeMapService;
@@ -30,9 +31,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@SpringBootTest
+@SpringBootTest(classes = {GlobalExceptionHandler.class, OfficeController.class})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class OfficeControllerTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";

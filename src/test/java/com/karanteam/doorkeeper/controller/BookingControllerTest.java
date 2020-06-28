@@ -3,6 +3,7 @@ package com.karanteam.doorkeeper.controller;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.karanteam.doorkeeper.exception.EntryForbiddenException;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
+import com.karanteam.doorkeeper.exception.GlobalExceptionHandler;
 import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.AdminService;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -19,8 +21,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {GlobalExceptionHandler.class, BookingController.class})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class BookingControllerTest {
 
     private static final String HEADER_TOKEN_NAME = "X-Token";
