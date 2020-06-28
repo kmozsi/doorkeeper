@@ -32,13 +32,9 @@ public class OfficeMapServiceTest {
     @Captor
     private ArgumentCaptor<List<OfficePosition>> captor;
 
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     public void imageProcessingFoundAllPositionAndStoreIt() throws IOException {
+        clearInvocations(officePositionService);
         when(officePositionService.setPositions(any())).thenReturn(10);
 
         File file = ResourceUtils.getFile("classpath:image/original.jpg");
@@ -46,7 +42,7 @@ public class OfficeMapServiceTest {
         int count = officeMapService.storeOfficeAndPositions(bytes);
         assertEquals(10, count);
 
-        verify(officePositionService, times(2)).setPositions(captor.capture()); // TODO init miatt
+        verify(officePositionService, times(1)).setPositions(captor.capture());
         assertTrue(captor.getValue().size() > 100);
     }
 }
