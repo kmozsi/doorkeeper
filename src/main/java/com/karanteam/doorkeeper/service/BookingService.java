@@ -61,7 +61,7 @@ public class BookingService {
 
     private Booking getNextWaiting() {
         return bookingRepository.findAll().stream()
-            .filter(booking -> booking.getOfficePosition() == null)
+            .filter(b -> b.getOfficePosition() == null && !b.isExited() && !b.isEntered())
             .min(Comparator.comparing(Booking::getOrdinal)).orElse(null);
     }
 
