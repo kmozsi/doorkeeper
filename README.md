@@ -27,7 +27,9 @@ Doorkeper requires some rules about the map:
 The application requires a running kafka (with zookeper). To be able to access kafka,
 `KAFKA_LOCATION` environment variable is required. By default it is `localhost:9092`.
 
-### Running everything in a docker compose
+:exclamation: Unfortunately, we are not able to run Doorkeper in docker, because OpenCV casuses some exceptions. Please run Doorkeper independently with maven (or an IDE).
+
+### ~~Running everything in a docker compose~~
 To run Doorkeper and all its dependent services (kafka, zookeper),
 execute the following command in the project's root directory:
 ```
@@ -48,7 +50,7 @@ Run the following commands in the project's root directory:
 mvn spring-boot:run
 ```
 
-### Running Doorkeper with docker
+### ~~Running Doorkeper with docker~~
 Run the following commands in the project's root directory:
 ```
 mvn clean install -P docker
