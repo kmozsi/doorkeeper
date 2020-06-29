@@ -29,14 +29,6 @@ The application requires a running kafka (with zookeper). To be able to access k
 
 :exclamation: Unfortunately, we are not able to run Doorkeper in docker, because OpenCV casuses some exceptions. Please run Doorkeper independently with maven (or an IDE).
 
-### ~~Running everything in a docker compose~~
-To run Doorkeper and all its dependent services (kafka, zookeper),
-execute the following command in the project's root directory:
-```
-mvn clean install -P docker
-docker-compose up -d
-```
-
 ### Run kafka with docker
 To run kafka independently, execute the following command in the
 project's root directory:
@@ -48,6 +40,14 @@ docker-compose -f kafka-docker.yml up -d
 Run the following commands in the project's root directory:
 ```
 mvn spring-boot:run
+```
+
+### ~~Running everything in a docker compose~~
+To run Doorkeper and all its dependent services (kafka, zookeper),
+execute the following command in the project's root directory:
+```
+mvn clean install -P docker
+docker-compose up -d
 ```
 
 ### ~~Running Doorkeper with docker~~
