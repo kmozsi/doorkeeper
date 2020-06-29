@@ -12,10 +12,35 @@ import java.util.stream.IntStream;
 @Service
 public class PositionOptimalizationService {
 
+
+    private static int prev = -1;
+    private static List<List<Integer>> groups = new ArrayList<>();
+
     public List<OfficePosition> getOptimalPositionDistributionWithTraverse(
         double minimumDistanceInPixels,
         List<OfficePosition> allPositions
     ) {
+
+        int count = allPositions.size();
+
+        allPositions.sort(Comparator.comparingInt(OfficePosition::getX));
+        int minX = allPositions.get(0).getX();
+        int maxX = allPositions.get(count - 1).getX();
+
+        allPositions.sort(Comparator.comparingInt(OfficePosition::getY));
+        int minY = allPositions.get(0).getY();
+        int maxY = allPositions.get(count - 1).getY();
+
+        int distance = (int)minimumDistanceInPixels;
+        int groupSize = distance * 1;
+        int delta = groupSize;
+
+        IntStream.range(minX - groupSize, maxX + groupSize).filter(x -> x % groupSize == (groupSize / 2)).forEach(
+            x -> IntStream.range(minY - groupSize, maxY + groupSize).filter(y -> y % groupSize == (groupSize / 2)).forEach(
+                y -> groups.add(putPositionsToGroup(allPositions, x, y, delta))
+            )
+        );
+
         return traverse(allPositions, new ArrayList<>(), minimumDistanceInPixels)
             .stream()
             .map(allPositions::get)
@@ -24,15 +49,21 @@ public class PositionOptimalizationService {
 
 
     private List<Integer> traverse(List<OfficePosition> all, List<Integer> currentState, double minimumDistanceInPixels) {
-        String string = currentState.stream().map(Object::toString).collect(Collectors.joining(","));
-        System.out.println("State (size:" + currentState.size() + "):" + string);
+        try {
+            if (currentState.get(0) != prev) {
+                prev = currentState.get(0);
+                System.out.println(prev);
+            }
+        } catch (Exception e) {
+            System.out.println("NULL");
+        }
 
         int startIndex = 0;
         if (currentState.size() > 0) {
             startIndex = currentState.get(currentState.size() - 1) + 1;
         }
 
-        List<Integer> nextPositions = getAcceptableNextPositions(startIndex, all, minimumDistanceInPixels);
+        List<Integer> nextPositions = getAcceptableNextPositions(startIndex, all, currentState, minimumDistanceInPixels);
 
         List<Integer>[] newBestState = new List[]{currentState};
         nextPositions.stream().forEach(
@@ -49,85 +80,116 @@ public class PositionOptimalizationService {
         return newBestState[0];
     }
 
-    private List<Integer> getAcceptableNextPositions(int startIndex, List<OfficePosition> allPositions, double minimumDistanceInPixels) {
-        return IntStream.range(startIndex, allPositions.size()).boxed().collect(Collectors.toList());
-    }
+    private List<Integer> getAcceptableNextPositions(int startIndex, List<OfficePosition> allPositions, List<Integer> state, double minimumDistanceInPixels) {
+        List<Integer> indexHaveToBeBigger = IntStream.range(startIndex, allPositions.size()).boxed().collect(Collectors.toList());
 
-//    private List<List<Integer>> getNextSteps(List<Integer> state, List<OfficePosition> all) {
-//        int startIndex = 0;
-//
-//        if (state.size() > 0) {
-//            startIndex = state.get(state.size() - 1) + 1;
-//        }
-//
-//        List<Integer> optionalNextPositions = getAcceptableNextPositions(startIndex, all, minimumDistanceInPixels);
-//
-//        return optionalNextPositions.stream().map(nextIndex -> {
-//            List<Integer> newList = new ArrayList<>(state);
-//            newList.add(nextIndex);
-//            return newList;
-//        }).collect(Collectors.toList());
-//    }
+        Set<Integer> indicesInTheSameGroup = groups.stream()
+            .filter(group -> group.contains(startIndex))
+            .flatMap(List::stream)
+            .filter(indexHaveToBeBigger::contains)
+            .collect(Collectors.toSet());
 
+        List<Integer> suggestedNextPositions = indicesInTheSameGroup
+            .stream()
+            .filter(index -> hasEnoughDistance(allPositions, state, minimumDistanceInPixels, index))
+            .collect(Collectors.toList());
 
-
-    public List<OfficePosition> getOptimalPositionDistribution(
-        double minimumDistanceInPixels,
-        List<OfficePosition> allPositions
-    ) {
-        int count = allPositions.size();
-        int bookableCount = allPositions.size();
-        
-        allPositions.sort(Comparator.comparingInt(OfficePosition::getX));
-        int minX = allPositions.get(0).getX();
-        int maxX = allPositions.get(count - 1).getX();
-
-        allPositions.sort(Comparator.comparingInt(OfficePosition::getY));
-        int minY = allPositions.get(0).getY();
-        int maxY = allPositions.get(count - 1).getY();
-
-        int distance = (int)minimumDistanceInPixels;
-
-        List<List<OfficePosition>> groups = new ArrayList<>();
-
-        IntStream.range(minX - distance, maxX + distance).filter(x -> x % minimumDistanceInPixels == 0).forEach(
-            x -> {
-                IntStream.range(minY - distance, maxY + distance).filter(y -> y % minimumDistanceInPixels == 0).forEach(
-                    y -> {
-                        groups.add(putPositionsToGroup(allPositions, x, y, distance));
-                    }
-                );
-            }
-        );
-
-        System.out.println(groups);
-        
-        
-
-        while (bookableCount > 0) {
-            System.out.println("try bookable count:" + bookableCount);
-            Optional<List<OfficePosition>> validDistribution = getValidDistribution(allPositions, bookableCount, minimumDistanceInPixels);
-            if (validDistribution.isPresent()) {
-                return validDistribution.get();
-            }
-            bookableCount = bookableCount - 1;
+        if (suggestedNextPositions.size() > 0) {
+            return suggestedNextPositions;
         }
 
-        return null;
+        return indexHaveToBeBigger
+            .stream()
+            .filter(index -> hasEnoughDistance(allPositions, state, minimumDistanceInPixels, index))
+            .collect(Collectors.toList());
     }
 
-    private List<OfficePosition> putPositionsToGroup(List<OfficePosition> allPositions, int x, int y, int minDist) {
+    private boolean hasEnoughDistance(List<OfficePosition> allPositions, List<Integer> state, double minimumDistanceInPixels, Integer index) {
 
-        int minX = x;
-        int maxX = x + 2 * minDist;
-        int minY = y;
-        int maxY = y + 2 * minDist;
+        Set<Integer> indicesInStateInTheSameGroup = groups.stream()
+            .filter(group -> group.contains(index))
+            .flatMap(List::stream)
+            .filter(state::contains)
+            .collect(Collectors.toSet());
+
+        int stateSize = state.size();
+        int indiSize = indicesInStateInTheSameGroup.size();
+
+        return indicesInStateInTheSameGroup
+            .stream()
+            .allMatch(
+                stateIndex -> allPositions.get(stateIndex).distanceFrom(allPositions.get(index)) > minimumDistanceInPixels
+            );
+    }
+
+
+
+//    public List<OfficePosition> getOptimalPositionDistribution(
+//        double minimumDistanceInPixels,
+//        List<OfficePosition> allPositions
+//    ) {
+//        int count = allPositions.size();
+//        int bookableCount = allPositions.size();
+//
+//        allPositions.sort(Comparator.comparingInt(OfficePosition::getX));
+//        int minX = allPositions.get(0).getX();
+//        int maxX = allPositions.get(count - 1).getX();
+//
+//        allPositions.sort(Comparator.comparingInt(OfficePosition::getY));
+//        int minY = allPositions.get(0).getY();
+//        int maxY = allPositions.get(count - 1).getY();
+//
+//        int distance = (int)minimumDistanceInPixels;
+//
+////        List<List<OfficePosition>> groups = new ArrayList<>();
+//
+//        IntStream.range(minX - distance, maxX + distance).filter(x -> x % minimumDistanceInPixels == 0).forEach(
+//            x -> {
+//                IntStream.range(minY - distance, maxY + distance).filter(y -> y % minimumDistanceInPixels == 0).forEach(
+//                    y -> {
+//                        groups.add(putPositionsToGroup(allPositions, x, y, distance));
+//                    }
+//                );
+//            }
+//        );
+//
+//        System.out.println(groups);
+//
+//
+//
+//        while (bookableCount > 0) {
+//            System.out.println("try bookable count:" + bookableCount);
+//            Optional<List<OfficePosition>> validDistribution = getValidDistribution(allPositions, bookableCount, minimumDistanceInPixels);
+//            if (validDistribution.isPresent()) {
+//                return validDistribution.get();
+//            }
+//            bookableCount = bookableCount - 1;
+//        }
+//
+//        return null;
+//    }
+
+    private List<Integer> putPositionsToGroup(List<OfficePosition> allPositions, int x, int y, int delta) {
+
+        int minX = x - delta;
+        int maxX = x + delta;
+        int minY = y - delta;
+        int maxY = y + delta;
 
         System.out.println("TO GROUP: X: " + minX + "-" + maxX + "   Y: " + minY + "-" + maxY);
 
-        return allPositions.stream().filter(
-            pos -> pos.getX() > minX && pos.getX() < maxX && pos.getY() > minY && pos.getY() < maxY
-        ).collect(Collectors.toList());
+        List<Integer> group = new ArrayList<>();
+
+        IntStream.range(0, allPositions.size()).forEach(
+            index -> {
+                OfficePosition pos = allPositions.get(index);
+                if (pos.getX() > minX && pos.getX() < maxX && pos.getY() > minY && pos.getY() < maxY) {
+                    group.add(index);
+                }
+            }
+        );
+
+        return group;
     }
 
     private Optional<List<OfficePosition>> getValidDistribution(

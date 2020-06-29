@@ -55,7 +55,7 @@ public class OfficePositionService {
     }
 
     private boolean isDifferentPosition(OfficePosition pos, OfficePosition available) {
-        return pos.distanceFrom(available) > 10;
+        return pos.distanceFrom(available) > 5;
     }
 
     public Optional<OfficePosition> findById(final Integer positionId) {
