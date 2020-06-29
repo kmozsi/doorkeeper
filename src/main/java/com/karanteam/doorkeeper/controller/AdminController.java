@@ -45,12 +45,8 @@ public class AdminController implements AdminApi {
         if (bookingService.isThereActiveBooking()) {
             return ResponseEntity.badRequest().body("Cannot modify office map while there are active bookings!");
         }
-        try {
-            adminService.setCapacity(capacityBody);
-            officeMapService.recalculatePositions();
-            return ResponseEntity.ok().build();
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        adminService.setCapacity(capacityBody);
+        officeMapService.recalculatePositions();
+        return ResponseEntity.ok().build();
     }
 }

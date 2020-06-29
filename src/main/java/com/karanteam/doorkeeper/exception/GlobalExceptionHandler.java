@@ -31,4 +31,10 @@ public class GlobalExceptionHandler {
         log.error("Entry forbidden: " + exception);
         return ResponseEntity.status(BAD_REQUEST).body("Entry is not allowed, because the office reached its maximum capacity!");
     }
+
+    @ExceptionHandler(MapParsingException.class)
+    public ResponseEntity<String> handleMapParsingException(MapParsingException exception) {
+        log.error("Map parsing failed: " + exception);
+        return ResponseEntity.status(BAD_REQUEST).body("Map parsing failed");
+    }
 }
