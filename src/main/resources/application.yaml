@@ -24,6 +24,6 @@ application:
     coloringMaxValue: 255
 messaging:
   topic: entry-notification
-  serverLocation: localhost:9092
+  serverLocation: ${KAFKA_LOCATION:localhost:9092}
   clientId: doorkeeper
   notifyPosition: 3
