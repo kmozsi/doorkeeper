@@ -2,6 +2,7 @@ package com.karanteam.doorkeeper.controller;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.karanteam.doorkeeper.exception.GlobalExceptionHandler;
+import com.karanteam.doorkeeper.service.BookingService;
 import com.karanteam.doorkeeper.service.JwtService;
 import com.karanteam.doorkeeper.service.AdminService;
 import com.karanteam.doorkeeper.service.OfficeMapService;
@@ -38,6 +39,9 @@ public class AdminControllerTest {
     private OfficeMapService officeMapService;
 
     @MockBean
+    private BookingService bookingService;
+
+    @MockBean
     private JwtService jwtService;
 
     @Test
@@ -56,6 +60,7 @@ public class AdminControllerTest {
     @Test
     public void setCapacitySuccessfullyProcessed() throws Exception {
         when(jwtService.parseToken(matches(TOKEN), any())).thenReturn(USER_ID);
+        when(bookingService.isThereActiveBooking()).thenReturn(false);
 
         mockMvc.perform(patch("/capacity")
             .contentType(APPLICATION_JSON)
@@ -65,5 +70,19 @@ public class AdminControllerTest {
 
         verify(adminService, times(1)).setCapacity(any());
         verify(officeMapService, times(1)).recalculatePositions();
+    }
+
+    @Test
+    public void setCapacityFailsBecauseThereAreActiveBookings() throws Exception {
+        when(jwtService.parseToken(matches(TOKEN), any())).thenReturn(USER_ID);
+        when(bookingService.isThereActiveBooking()).thenReturn(true);
+
+        mockMvc.perform(patch("/capacity")
+            .contentType(APPLICATION_JSON)
+            .content("{\"capacity\": 1, \"percentage\": 1}")
+            .header(HEADER_TOKEN_NAME, TOKEN))
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(adminService, officeMapService);
     }
 }
