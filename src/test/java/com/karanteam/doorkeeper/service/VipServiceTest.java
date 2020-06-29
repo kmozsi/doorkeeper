@@ -1,11 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.karanteam.doorkeeper.entity.Vip;
 import com.karanteam.doorkeeper.repository.VipRepository;
 import java.util.Collections;
@@ -15,19 +9,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class VipServiceTest {
 
     private static final String USER_ID = "USER_ID";
+    private static final Vip VIP_USER = new Vip(USER_ID);
 
     @Autowired
     private VipService vipService;
 
     @MockBean
     private VipRepository vipRepository;
-
-    private static final Vip VIP_USER = new Vip(USER_ID);
 
     private void evictCache() {
         when(vipRepository.findAll()).thenReturn(Collections.emptyList());
@@ -76,5 +74,4 @@ public class VipServiceTest {
         vipService.getVips();
         verify(vipRepository, times(1)).findAll();
     }
-
 }

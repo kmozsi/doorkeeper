@@ -3,12 +3,10 @@ package com.karanteam.doorkeeper.service;
 import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficeCapacity;
 import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.model.CapacityBody;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Service to handle the daily capacity of the office.

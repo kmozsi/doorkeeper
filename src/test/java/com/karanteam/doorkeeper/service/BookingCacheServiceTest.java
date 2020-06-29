@@ -1,14 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
-import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.karanteam.doorkeeper.config.CachingConfig;
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.entity.OfficePosition;
@@ -21,27 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
+import static com.karanteam.doorkeeper.enumeration.PositionStatus.BOOKED;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class BookingCacheServiceTest {
 
     private static final String USER_ID = "USER_ID";
-
-    @Autowired
-    private BookingCacheService bookingCacheService;
-
-    @Autowired
-    private BookingService bookingService;
-
-    @MockBean
-    private BookingRepository bookingRepository;
-
-    @MockBean
-    private OfficePositionService officePositionService;
-
-    @MockBean
-    private AdminService adminService;
-
     private static final Booking activeBooking = Booking.builder()
         .userId(USER_ID).ordinal(1).entered(true).officePosition(
             OfficePosition.builder().id(1).orientation(NORTH).x(1).y(1).status(BOOKED).build()
@@ -50,9 +33,18 @@ public class BookingCacheServiceTest {
         .userId(USER_ID).ordinal(1).entered(true).exited(true).officePosition(
             OfficePosition.builder().id(1).orientation(NORTH).x(1).y(1).status(BOOKED).build()
         ).build();
-
     @Autowired
     CacheManager cacheManager;
+    @Autowired
+    private BookingCacheService bookingCacheService;
+    @Autowired
+    private BookingService bookingService;
+    @MockBean
+    private BookingRepository bookingRepository;
+    @MockBean
+    private OfficePositionService officePositionService;
+    @MockBean
+    private AdminService adminService;
 
     private void evictCache() {
         cacheManager.getCache(CachingConfig.POSITION_CACHE).clear();
@@ -150,5 +142,4 @@ public class BookingCacheServiceTest {
             booking.getUserId().equals(USER_ID) && booking.isExited() && booking.getOfficePosition() == null)
         );
     }
-
 }

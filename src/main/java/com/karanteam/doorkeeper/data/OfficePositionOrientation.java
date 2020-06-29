@@ -22,14 +22,6 @@ public enum OfficePositionOrientation {
         this.height = height;
     }
 
-    public int getCenterX() {
-        return centerX;
-    }
-
-    public int getCenterY() {
-        return centerY;
-    }
-
     public static OfficePositionOrientation getByRotations(final int rotations) {
         for (OfficePositionOrientation orientation : OfficePositionOrientation.values()) {
             if (rotations % 4 == orientation.rotations) {
@@ -37,6 +29,14 @@ public enum OfficePositionOrientation {
             }
         }
         return null;
+    }
+
+    public int getCenterX() {
+        return centerX;
+    }
+
+    public int getCenterY() {
+        return centerY;
     }
 
     public Size getSize() {

@@ -26,5 +26,4 @@ public class Image {
     private byte[] content;
     @NonNull
     private String key;
-
 }

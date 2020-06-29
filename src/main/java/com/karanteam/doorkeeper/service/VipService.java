@@ -1,7 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
-
 import com.karanteam.doorkeeper.config.CachingConfig;
 import com.karanteam.doorkeeper.entity.Vip;
 import com.karanteam.doorkeeper.repository.VipRepository;
@@ -13,6 +11,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 @Service
 @Slf4j
@@ -48,5 +47,4 @@ public class VipService {
     public boolean isVip(String userId) {
         return getVipUserIds().contains(userId);
     }
-
 }

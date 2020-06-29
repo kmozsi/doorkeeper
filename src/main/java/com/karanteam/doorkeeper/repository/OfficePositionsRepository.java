@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OfficePositionsRepository extends JpaRepository<OfficePosition, Integer> {
-
 }

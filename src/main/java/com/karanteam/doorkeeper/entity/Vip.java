@@ -19,5 +19,4 @@ public class Vip {
     private int id;
     @NonNull
     private String userId;
-
 }
