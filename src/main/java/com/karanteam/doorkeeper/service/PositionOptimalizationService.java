@@ -5,15 +5,71 @@ import org.paukov.combinatorics3.Generator;
 import org.paukov.combinatorics3.IGenerator;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
 public class PositionOptimalizationService {
+
+    public List<OfficePosition> getOptimalPositionDistributionWithTraverse(
+        double minimumDistanceInPixels,
+        List<OfficePosition> allPositions
+    ) {
+        return traverse(allPositions, new ArrayList<>(), minimumDistanceInPixels)
+            .stream()
+            .map(allPositions::get)
+            .collect(Collectors.toList());
+    }
+
+
+    private List<Integer> traverse(List<OfficePosition> all, List<Integer> currentState, double minimumDistanceInPixels) {
+        String string = currentState.stream().map(Object::toString).collect(Collectors.joining(","));
+        System.out.println("State (size:" + currentState.size() + "):" + string);
+
+        int startIndex = 0;
+        if (currentState.size() > 0) {
+            startIndex = currentState.get(currentState.size() - 1) + 1;
+        }
+
+        List<Integer> nextPositions = getAcceptableNextPositions(startIndex, all, minimumDistanceInPixels);
+
+        List<Integer>[] newBestState = new List[]{currentState};
+        nextPositions.stream().forEach(
+            position -> {
+                List<Integer> newState = new ArrayList<>(currentState);
+                newState.add(position);
+                List<Integer> stateToExamine = traverse(all, newState, minimumDistanceInPixels);
+                if (stateToExamine.size() > newBestState[0].size()) {
+                    newBestState[0] = stateToExamine;
+                }
+            }
+        );
+
+        return newBestState[0];
+    }
+
+    private List<Integer> getAcceptableNextPositions(int startIndex, List<OfficePosition> allPositions, double minimumDistanceInPixels) {
+        return IntStream.range(startIndex, allPositions.size()).boxed().collect(Collectors.toList());
+    }
+
+//    private List<List<Integer>> getNextSteps(List<Integer> state, List<OfficePosition> all) {
+//        int startIndex = 0;
+//
+//        if (state.size() > 0) {
+//            startIndex = state.get(state.size() - 1) + 1;
+//        }
+//
+//        List<Integer> optionalNextPositions = getAcceptableNextPositions(startIndex, all, minimumDistanceInPixels);
+//
+//        return optionalNextPositions.stream().map(nextIndex -> {
+//            List<Integer> newList = new ArrayList<>(state);
+//            newList.add(nextIndex);
+//            return newList;
+//        }).collect(Collectors.toList());
+//    }
+
+
 
     public List<OfficePosition> getOptimalPositionDistribution(
         double minimumDistanceInPixels,
