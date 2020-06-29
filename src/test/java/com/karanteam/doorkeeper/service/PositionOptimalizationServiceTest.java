@@ -36,7 +36,7 @@ public class PositionOptimalizationServiceTest {
         Assertions.assertEquals(189, allPositions.size());
 
         List<OfficePosition> optimalPositionDistribution = positionOptimalizationService
-            .getOptimalPositionDistributionWithTraverse(
+            .getOptimalPositionDistributionWithExclusionLists(
                 50,
                 allPositions.subList(0,70)
 //                allPositions

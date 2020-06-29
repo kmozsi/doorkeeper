@@ -16,6 +16,55 @@ public class PositionOptimalizationService {
     private static int prev = -1;
     private static List<List<Integer>> groups = new ArrayList<>();
 
+    public List<OfficePosition> getOptimalPositionDistributionWithExclusionLists(
+        double minDist,
+        List<OfficePosition> allPositions
+    ) {
+
+        List<List<OfficePosition>> exclusionList = allPositions.stream().map(
+            officePosition -> allPositions.stream().filter(other -> other.distanceFrom(officePosition) < minDist).collect(Collectors.toList())
+        ).collect(Collectors.toList());
+
+        exclusionList.sort((b, a) -> a.size() - b.size());
+
+        return traverseExclusion(exclusionList, 0, allPositions, new ArrayList<>());
+    }
+
+    private List<OfficePosition> traverseExclusion(List<List<OfficePosition>> exclusionList, int exclusionIndex, List<OfficePosition> remainedPositions, List<OfficePosition> selection) {
+
+        if (exclusionIndex >= exclusionList.size()) {
+            return selection;
+        }
+
+        List<OfficePosition> currentExclusion = exclusionList.get(exclusionIndex);
+
+        List<List<OfficePosition>> collect = currentExclusion
+            .stream()
+            .filter(remainedPositions::contains)
+            .map(
+                selectedPosition -> {
+
+                    ArrayList<OfficePosition> newSelection = new ArrayList<>(selection);
+                    newSelection.add(selectedPosition);
+
+                    return traverseExclusion(
+                        exclusionList,
+                        exclusionIndex + 1,
+                        remainedPositions.stream().filter(pos -> !currentExclusion.contains(pos)).collect(Collectors.toList()),
+                        newSelection
+                    );
+                }
+            ).collect(Collectors.toList());
+
+        collect.sort((a,b) -> b.size() - a.size());
+
+        if (collect.size() > 0 && collect.get(0).size() > selection.size()) {
+            return collect.get(0);
+        }
+
+        return selection;
+    }
+
     public List<OfficePosition> getOptimalPositionDistributionWithTraverse(
         double minimumDistanceInPixels,
         List<OfficePosition> allPositions
