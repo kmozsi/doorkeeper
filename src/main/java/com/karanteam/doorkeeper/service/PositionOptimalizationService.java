@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Service
 public class PositionOptimalizationService {
@@ -25,12 +26,16 @@ public class PositionOptimalizationService {
             officePosition -> allPositions.stream().filter(other -> other.distanceFrom(officePosition) < minDist).collect(Collectors.toList())
         ).collect(Collectors.toList());
 
-        exclusionList.sort((b, a) -> a.size() - b.size());
+        exclusionList.sort((b,a) -> a.size() - b.size());
 
         return traverseExclusion(exclusionList, 0, allPositions, new ArrayList<>());
     }
 
-    private List<OfficePosition> traverseExclusion(List<List<OfficePosition>> exclusionList, int exclusionIndex, List<OfficePosition> remainedPositions, List<OfficePosition> selection) {
+    private List<OfficePosition> traverseExclusion(final List<List<OfficePosition>> exclusionList, int exclusionIndex, final List<OfficePosition> remainedPositions, final List<OfficePosition> selection) {
+
+        if (exclusionIndex < 10) {
+            System.out.println(exclusionIndex);
+        }
 
         if (exclusionIndex >= exclusionList.size()) {
             return selection;
@@ -38,9 +43,21 @@ public class PositionOptimalizationService {
 
         List<OfficePosition> currentExclusion = exclusionList.get(exclusionIndex);
 
-        List<List<OfficePosition>> collect = currentExclusion
+        List<OfficePosition> positionToExamineInCurrentExclusion = currentExclusion
             .stream()
-            .filter(remainedPositions::contains)
+            .filter(remainedPositions::contains).collect(Collectors.toList());
+
+        if (positionToExamineInCurrentExclusion.size() < 1) {
+            return traverseExclusion(
+                exclusionList,
+                exclusionIndex + 1,
+                remainedPositions,
+                selection
+            );
+        }
+
+        List<List<OfficePosition>> collect = positionToExamineInCurrentExclusion
+            .stream()
             .map(
                 selectedPosition -> {
 
