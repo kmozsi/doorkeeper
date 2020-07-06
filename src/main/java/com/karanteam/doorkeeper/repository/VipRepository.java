@@ -7,7 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VipRepository extends JpaRepository<Vip, Integer> {
-
-  Optional<Vip> findByUserId(final String userId);
-
+    Optional<Vip> findByUserId(final String userId);
 }

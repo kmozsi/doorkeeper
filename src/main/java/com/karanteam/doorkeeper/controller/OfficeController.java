@@ -27,10 +27,7 @@ public class OfficeController implements OfficeApi {
     private final OfficePositionService officePositionService;
     private final JwtService jwtService;
 
-    public OfficeController(BookingService bookingService,
-        OfficeMapService officeMapService,
-        OfficePositionService officePositionService,
-        JwtService jwtService) {
+    public OfficeController(BookingService bookingService, OfficeMapService officeMapService, OfficePositionService officePositionService, JwtService jwtService) {
         this.bookingService = bookingService;
         this.officeMapService = officeMapService;
         this.officePositionService = officePositionService;

@@ -3,21 +3,21 @@ package com.karanteam.doorkeeper.service;
 import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficeCapacity;
 import com.karanteam.doorkeeper.repository.OfficeCapacityRepository;
+import java.io.IOException;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.CapacityBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.io.IOException;
-import java.util.Optional;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = AdminService.class)
 public class AdminServiceTest {

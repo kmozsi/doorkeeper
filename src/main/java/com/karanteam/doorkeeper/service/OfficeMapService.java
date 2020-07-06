@@ -1,7 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.enumeration.Color.YELLOW;
-
 import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.data.ImageProcessingConfiguration;
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
@@ -25,6 +23,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
+import static com.karanteam.doorkeeper.enumeration.Color.YELLOW;
 
 @Service
 @Slf4j
@@ -109,11 +108,11 @@ public class OfficeMapService {
 
     private List<OfficePosition> readFreePositions(Mat originalMat, Mat positions, OfficePositionOrientation officePositionOrientation) {
         final List<OfficePosition> officePositions = new ArrayList<>();
-        IntStream.range(0, (int)positions.size().height).forEach(
+        IntStream.range(0, (int) positions.size().height).forEach(
             index -> {
                 double[] coords = positions.get(index, 0);
-                int x = (int)coords[0];
-                int y = (int)coords[1];
+                int x = (int) coords[0];
+                int y = (int) coords[1];
                 Rect rect = new Rect(x, y, 20, 20);
                 Scalar scalar = Core.mean(originalMat.submat(rect));
                 if (Color.GREEN.match(scalar, 35)) {

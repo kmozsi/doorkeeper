@@ -4,12 +4,11 @@ import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
 import com.karanteam.doorkeeper.repository.OfficePositionsRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OfficePositionService {

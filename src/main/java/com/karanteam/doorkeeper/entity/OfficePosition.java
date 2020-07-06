@@ -2,11 +2,14 @@ package com.karanteam.doorkeeper.entity;
 
 import com.karanteam.doorkeeper.data.OfficePositionOrientation;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
-import lombok.*;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Data
@@ -37,5 +40,4 @@ public class OfficePosition {
         double cb = Math.abs(getCenterX() - other.getCenterX());
         return Math.hypot(ac, cb);
     }
-
 }

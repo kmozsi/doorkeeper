@@ -1,12 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.EAST;
-import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.karanteam.doorkeeper.config.ApplicationConfig;
 import com.karanteam.doorkeeper.entity.OfficePosition;
 import com.karanteam.doorkeeper.enumeration.PositionStatus;
@@ -21,6 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.EAST;
+import static com.karanteam.doorkeeper.data.OfficePositionOrientation.NORTH;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = OfficePositionService.class)
 public class OfficePositionServiceTest {

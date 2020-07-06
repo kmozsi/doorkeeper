@@ -146,8 +146,8 @@ public class BookingService {
     }
 
     private String getURIForPosition(final OfficePosition position) {
-        if(position != null) {
-            String path =  "/positions/" + position.getId();
+        if (position != null) {
+            String path = "/positions/" + position.getId();
             URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand().toUri();
             return uri.toString();
         }

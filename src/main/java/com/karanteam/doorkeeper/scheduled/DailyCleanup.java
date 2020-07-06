@@ -13,15 +13,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class DailyCleanup {
 
-  private final BookingService bookingService;
+    private final BookingService bookingService;
 
-  public DailyCleanup(BookingService bookingService) {
-    this.bookingService = bookingService;
-  }
+    public DailyCleanup(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
 
-  @Scheduled(cron = "0 0 0 * * ?")
-  public void cleanupBookings() {
-    bookingService.cleanupBookings();
-  }
-
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanupBookings() {
+        bookingService.cleanupBookings();
+    }
 }

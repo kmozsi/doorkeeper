@@ -1,16 +1,19 @@
 package com.karanteam.doorkeeper.service;
 
-import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import static org.opencv.core.CvType.CV_8UC3;
 
 @Service
@@ -51,13 +54,13 @@ public class ImageService {
     }
 
     public void markPosition(Mat mat, int x, int y, Size size, Scalar color) {
-        Rect rect = new Rect(x, y, (int)size.width, (int)size.height);
+        Rect rect = new Rect(x, y, (int) size.width, (int) size.height);
         Imgproc.rectangle(mat, rect, color);
     }
 
     public void fillPosition(Mat mat, int x, int y, Size size, Scalar color, int threshold, int proc, int max) {
         Mat mask = getMask(mat, x, y, size, threshold, proc, max);
-        fillColor(mat,mask, x, y, size, color);
+        fillColor(mat, mask, x, y, size, color);
     }
 
     public Mat getMask(Mat original, int x, int y, Size size, int threshold, int proc, int max) {
@@ -69,17 +72,13 @@ public class ImageService {
     }
 
     public void fillColor(Mat original, Mat mask, int x, int y, Size size, Scalar color) {
-        Mat red = new Mat((int)size.height, (int)size.width, CV_8UC3, color);
+        Mat red = new Mat((int) size.height, (int) size.width, CV_8UC3, color);
 
         red.copyTo(original.rowRange(
             y, y + red.height()
         ).colRange(
             x, x + red.width()
         ), mask);
-    }
-
-    public Mat readMat(String imageName) throws IOException {
-        return readFileToMat(readImage(imageName));
     }
 
     public File readImage(String imageName) throws FileNotFoundException {

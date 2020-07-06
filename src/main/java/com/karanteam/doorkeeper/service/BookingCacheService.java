@@ -1,7 +1,5 @@
 package com.karanteam.doorkeeper.service;
 
-import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
-
 import com.karanteam.doorkeeper.config.CachingConfig;
 import com.karanteam.doorkeeper.entity.Booking;
 import com.karanteam.doorkeeper.exception.EntryNotFoundException;
@@ -9,6 +7,7 @@ import com.karanteam.doorkeeper.repository.BookingRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import static com.karanteam.doorkeeper.config.CachingConfig.POSITION_CACHE;
 
 /**
  * Service to cache the users current position.
@@ -20,9 +19,7 @@ public class BookingCacheService {
     private final BookingRepository bookingRepository;
     private final OfficePositionService officePositionService;
 
-    public BookingCacheService(AdminService adminService,
-        BookingRepository bookingRepository,
-        OfficePositionService officePositionService) {
+    public BookingCacheService(AdminService adminService, BookingRepository bookingRepository, OfficePositionService officePositionService) {
         this.adminService = adminService;
         this.bookingRepository = bookingRepository;
         this.officePositionService = officePositionService;
@@ -54,5 +51,4 @@ public class BookingCacheService {
         return bookingRepository.findByExitedAndEnteredAndUserId(false, true, userId)
             .orElseThrow(EntryNotFoundException::new);
     }
-
 }
